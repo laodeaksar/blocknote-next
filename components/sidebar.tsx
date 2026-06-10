@@ -14,8 +14,113 @@ import {
   Settings,
 } from "lucide-react";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { UserButton } from "@clerk/nextjs";
+
+function PageItem({
+  page,
+  isActive,
+  onNavigate,
+  onArchive,
+}: {
+  page: { _id: Id<"pages">; title: string; icon?: string };
+  isActive: boolean;
+  onNavigate: () => void;
+  onArchive: (e: React.MouseEvent) => void;
+}) {
+  const updatePage = useMutation(api.pages.update);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(page.title);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isEditing) {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }
+  }, [isEditing]);
+
+  const startEditing = (e: React.MouseEvent) => {
+    if (!isActive) return;
+    e.stopPropagation();
+    setEditValue(page.title || "Untitled");
+    setIsEditing(true);
+  };
+
+  const commitEdit = async () => {
+    const trimmed = editValue.trim();
+    if (!trimmed) {
+      setEditValue(page.title || "Untitled");
+      setIsEditing(false);
+      return;
+    }
+    if (trimmed !== page.title) {
+      await updatePage({ id: page._id, title: trimmed });
+      toast.success("Page renamed");
+    }
+    setIsEditing(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      commitEdit();
+    } else if (e.key === "Escape") {
+      setEditValue(page.title || "Untitled");
+      setIsEditing(false);
+    }
+  };
+
+  return (
+    <div
+      onClick={!isEditing ? onNavigate : undefined}
+      className={`group relative w-full flex items-center justify-between px-2 py-1.5 rounded-md text-sm transition-colors cursor-pointer ${
+        isActive
+          ? "bg-gray-200 text-gray-900"
+          : "text-gray-600 hover:bg-gray-200"
+      }`}
+    >
+      <span className="flex items-center gap-2 min-w-0 flex-1">
+        {page.icon ? (
+          <span className="text-sm shrink-0">{page.icon}</span>
+        ) : (
+          <FileText className="w-4 h-4 shrink-0 text-gray-400" />
+        )}
+
+        {isEditing ? (
+          <input
+            ref={inputRef}
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            onBlur={commitEdit}
+            onKeyDown={handleKeyDown}
+            onClick={(e) => e.stopPropagation()}
+            className="flex-1 min-w-0 bg-white border border-blue-400 rounded px-1 py-0 text-sm text-gray-900 outline-none ring-1 ring-blue-300"
+          />
+        ) : (
+          <span
+            className="truncate flex-1"
+            onDoubleClick={startEditing}
+            title={isActive ? "Double-click to rename" : undefined}
+          >
+            {page.title || "Untitled"}
+          </span>
+        )}
+      </span>
+
+      {!isEditing && (
+        <span
+          onClick={onArchive}
+          className="opacity-0 group-hover:opacity-100 shrink-0 p-1 hover:bg-gray-300 rounded transition-all"
+          role="button"
+          title="Move to trash"
+        >
+          <Trash2 className="w-3 h-3 text-gray-500" />
+        </span>
+      )}
+    </div>
+  );
+}
 
 export function Sidebar() {
   const router = useRouter();
@@ -96,10 +201,7 @@ export function Sidebar() {
         {pages === undefined && (
           <div className="space-y-1 px-2">
             {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="h-7 bg-gray-200 rounded animate-pulse"
-              />
+              <div key={i} className="h-7 bg-gray-200 rounded animate-pulse" />
             ))}
           </div>
         )}
@@ -111,32 +213,13 @@ export function Sidebar() {
         )}
 
         {pages?.map((page) => (
-          <button
+          <PageItem
             key={page._id}
-            onClick={() => router.push(`/doc/${page._id}`)}
-            className={`group w-full flex items-center justify-between px-2 py-1.5 rounded-md text-sm transition-colors ${
-              currentId === page._id
-                ? "bg-gray-200 text-gray-900"
-                : "text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            <span className="flex items-center gap-2 min-w-0">
-              {page.icon ? (
-                <span className="text-sm shrink-0">{page.icon}</span>
-              ) : (
-                <FileText className="w-4 h-4 shrink-0 text-gray-400" />
-              )}
-              <span className="truncate">{page.title || "Untitled"}</span>
-            </span>
-            <span
-              onClick={(e) => handleArchive(e, page._id)}
-              className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-300 rounded transition-all"
-              role="button"
-              title="Move to trash"
-            >
-              <Trash2 className="w-3 h-3 text-gray-500" />
-            </span>
-          </button>
+            page={page}
+            isActive={currentId === page._id}
+            onNavigate={() => router.push(`/doc/${page._id}`)}
+            onArchive={(e) => handleArchive(e, page._id)}
+          />
         ))}
       </div>
 
