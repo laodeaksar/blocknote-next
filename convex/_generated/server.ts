@@ -3,13 +3,13 @@
  * Generated stub — replace by running: npx convex dev --once
  */
 import {
-  action,
-  internalAction,
-  internalMutation,
-  internalQuery,
-  mutation,
-  query,
-  httpAction,
+  actionGeneric as action,
+  internalActionGeneric as internalAction,
+  internalMutationGeneric as internalMutation,
+  internalQueryGeneric as internalQuery,
+  mutationGeneric as mutation,
+  queryGeneric as query,
+  httpActionGeneric as httpAction,
 } from "convex/server";
 
 export {

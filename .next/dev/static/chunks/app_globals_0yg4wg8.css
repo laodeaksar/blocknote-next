@@ -1677,6 +1677,10 @@
     overflow: visible;
   }
 
+  .\!hidden {
+    display: none !important;
+  }
+
   .block {
     display: block;
   }
@@ -6037,6 +6041,10 @@
 
   .\[--cell-size\:2rem\] {
     --cell-size: 2rem;
+  }
+
+  .\[agentkeepalive\:deprecated\] {
+    agentkeepalive: deprecated;
   }
 
   .\[hash\:base64\] {

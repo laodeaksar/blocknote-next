@@ -35,6 +35,9 @@ importers:
       next:
         specifier: canary
         version: 16.3.0-canary.47(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      pnpm:
+        specifier: ^11.5.3
+        version: 11.5.3
       react:
         specifier: ^19
         version: 19.2.7
@@ -1950,6 +1953,11 @@ packages:
   pirates@4.0.7:
     resolution: {integrity: sha512-TfySrs/5nm8fQJDcBDuUng3VOUKsd7S+zqvbOTiGXHfxX4wK31ard+hoNuvkicM/2YFzlpDgABOevKSsB4G/FA==}
     engines: {node: '>= 6'}
+
+  pnpm@11.5.3:
+    resolution: {integrity: sha512-esHJGTQcITo03A0Cr7cUPFwmrCbujEeC3uqCG4rGTSE0oIH9iUHa5uKbu0j1jfwrf7zuzMB8svCdIZ00Kklp7Q==}
+    engines: {node: '>=22.13'}
+    hasBin: true
 
   postcss-import@15.1.0:
     resolution: {integrity: sha512-hpr+J05B2FVYUAXHeK1YyI267J/dDDhMU6B6civm8hSY1jYJnBXxzKDKDswzJmtLHryrjhnDjqqp/49t8FALew==}
@@ -4608,6 +4616,8 @@ snapshots:
   pify@2.3.0: {}
 
   pirates@4.0.7: {}
+
+  pnpm@11.5.3: {}
 
   postcss-import@15.1.0(postcss@8.5.15):
     dependencies:

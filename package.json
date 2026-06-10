@@ -19,6 +19,7 @@
     "convex": "^1",
     "lucide-react": "^0.400.0",
     "next": "canary",
+    "pnpm": "^11.5.3",
     "react": "^19",
     "react-dom": "^19",
     "sonner": "^2",
