@@ -1,11 +1,11 @@
 "use client";
 
-import { UserButton } from "@clerk/nextjs";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { MoreHorizontal, Star, Share2 } from "lucide-react";
 import { toast } from "sonner";
+import { UserMenu } from "@/components/user-menu";
 
 interface NavbarProps {
   pageId: Id<"pages">;
@@ -58,7 +58,7 @@ export function Navbar({ pageId }: NavbarProps) {
           <MoreHorizontal className="w-4 h-4 text-gray-500" />
         </button>
 
-        <UserButton afterSignOutUrl="/" />
+        <UserMenu />
       </div>
     </nav>
   );

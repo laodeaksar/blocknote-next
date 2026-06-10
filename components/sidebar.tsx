@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useState, useRef, useEffect } from "react";
-import { UserButton } from "@clerk/nextjs";
+import { UserMenu } from "@/components/user-menu";
 
 type PageData = {
   _id: Id<"pages">;
@@ -178,7 +178,7 @@ export function Sidebar() {
           </div>
           <span className="text-sm font-medium text-gray-800">Workspace</span>
         </div>
-        <UserButton afterSignOutUrl="/" />
+        <UserMenu />
       </div>
 
       <div className="px-2 space-y-0.5">

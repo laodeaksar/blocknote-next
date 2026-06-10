@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
 import { ConvexClientProvider } from "@/lib/convex";
 import { Toaster } from "sonner";
 import "./globals.css";
@@ -15,15 +14,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className="antialiased">
-          <ConvexClientProvider>
-            {children}
-            <Toaster richColors position="bottom-right" />
-          </ConvexClientProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en">
+      <body className="antialiased">
+        <ConvexClientProvider>
+          {children}
+          <Toaster richColors position="bottom-right" />
+        </ConvexClientProvider>
+      </body>
+    </html>
   );
 }

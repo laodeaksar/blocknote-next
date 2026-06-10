@@ -1,11 +1,11 @@
-import { auth } from "@clerk/nextjs/server";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/sidebar";
 import { FileText, Plus } from "lucide-react";
 
 export default async function DashboardPage() {
-  const { userId } = await auth();
-  if (!userId) redirect("/sign-in");
+  const cookieStore = await cookies();
+  if (!cookieStore.has("better-auth.session_token")) redirect("/sign-in");
 
   return (
     <div className="flex h-screen bg-white">

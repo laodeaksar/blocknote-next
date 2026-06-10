@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/sidebar";
 import { Navbar } from "@/components/navbar";
@@ -9,8 +9,8 @@ type Props = { params: Promise<{ id: string }> };
 
 export default async function DocPage({ params }: Props) {
   const { id } = await params;
-  const { userId } = await auth();
-  if (!userId) redirect("/sign-in");
+  const cookieStore = await cookies();
+  if (!cookieStore.has("better-auth.session_token")) redirect("/sign-in");
 
   return (
     <div className="flex h-screen bg-white overflow-hidden">
