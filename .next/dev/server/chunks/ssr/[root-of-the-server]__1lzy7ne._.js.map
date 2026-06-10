@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 34, "column": 0}, "map": {"version":3,"sources":["file:///home/runner/workspace/lib/convex.tsx"],"sourcesContent":["\"use client\";\n\nimport { ConvexReactClient } from \"convex/react\";\nimport { ConvexProviderWithClerk } from \"convex/react-clerk\";\nimport { useAuth } from \"@clerk/nextjs\";\n\nconst convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);\n\nexport function ConvexClientProvider({\n  children,\n}: {\n  children: React.ReactNode;\n}) {\n  return (\n    <ConvexProviderWithClerk client={convex} useAuth={useAuth}>\n      {children}\n    </ConvexProviderWithClerk>\n  );\n}\n"],"names":["convex","process","env","NEXT_PUBLIC_CONVEX_URL","ConvexClientProvider","children","client","useAuth"],"mappings":";;;;;AAEA;AAAA;AACA;AAAA;AACA;AAJA;;;;;AAMA,MAAMA,SAAS,IAAI,6KAAiB,CAACC,QAAQC,GAAG,CAACC,sBAAsB;AAEhE,SAASC,qBAAqB,EACnCC,QAAQ,EAGT;IACC,qBACE,8OAAC,6MAAuB;QAACC,QAAQN;QAAQO,SAAS,6PAAO;kBACtDF;;;;;;AAGP"}}]
+}

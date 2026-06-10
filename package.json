@@ -1,0 +1,35 @@
+{
+  "name": "notion-clone-replit",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack -p 5000",
+    "build": "next build",
+    "start": "next start -p 5000",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "canary",
+    "react": "^19",
+    "react-dom": "^19",
+    "@clerk/nextjs": "^6",
+    "convex": "^1",
+    "@blocknote/core": "^0.23",
+    "@blocknote/react": "^0.23",
+    "@blocknote/mantine": "^0.23",
+    "@blocknote/shadcn": "^0.23",
+    "@mantine/core": "^7",
+    "@mantine/hooks": "^7",
+    "lucide-react": "^0.400.0",
+    "sonner": "^2",
+    "use-debounce": "^10",
+    "tailwindcss": "^4",
+    "clsx": "^2"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19"
+  }
+}

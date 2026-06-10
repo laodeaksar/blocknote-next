@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["file:///home/runner/workspace/app/globals.css"],"sourcesContent":["@import \"tailwindcss\";\n\n@theme {\n  --color-background: #ffffff;\n  --color-foreground: #171717;\n  --color-sidebar: #f7f7f5;\n  --color-sidebar-hover: #ebebea;\n  --color-border: #e9e9e7;\n  --color-muted: #9b9a97;\n  --color-accent: #2383e2;\n}\n\n* {\n  box-sizing: border-box;\n}\n\nhtml,\nbody {\n  margin: 0;\n  padding: 0;\n  height: 100%;\n  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, \"Segoe UI\",\n    Helvetica, \"Apple Color Emoji\", Arial, sans-serif, \"Segoe UI Emoji\",\n    \"Segoe UI Symbol\";\n  background-color: #ffffff;\n  color: #171717;\n}\n\n.bn-editor {\n  padding: 0 !important;\n}\n"],"names":[],"mappings":"AAEA;;;;AAUA;;;;AAIA;;;;;;;;;AAYA"}}]
+}
