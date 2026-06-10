@@ -3,11 +3,5 @@
   "buildCommand": "pnpm build",
   "installCommand": "pnpm install",
   "devCommand": "pnpm dev",
-  "outputDirectory": ".next",
-  "env": {
-    "NEXT_PUBLIC_CONVEX_URL": "",
-    "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY": "",
-    "CLERK_SECRET_KEY": "",
-    "CLERK_JWT_ISSUER_DOMAIN": ""
-  }
+  "outputDirectory": ".next"
 }
