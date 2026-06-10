@@ -1,18 +1,28 @@
 /* eslint-disable */
 /**
- * Generated server stubs — replace by running: npx convex dev --once
+ * Generated stub — replace by running: npx convex dev --once
  */
 import {
+  action,
   internalAction,
   internalMutation,
   internalQuery,
+  mutation,
+  query,
+  httpAction,
 } from "convex/server";
-export { internalAction, internalMutation, internalQuery };
 
-import { action, mutation, query, httpAction } from "convex/server";
-export { action, mutation, query, httpAction };
+export {
+  action,
+  internalAction,
+  internalMutation,
+  internalQuery,
+  mutation,
+  query,
+  httpAction,
+};
 
-import { DataModel } from "./dataModel";
+import type { DataModel } from "./dataModel";
 import type {
   GenericActionCtx,
   GenericMutationCtx,
