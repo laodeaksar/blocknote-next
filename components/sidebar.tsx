@@ -17,6 +17,14 @@ import { toast } from "sonner";
 import { useState, useRef, useEffect } from "react";
 import { UserButton } from "@clerk/nextjs";
 
+type PageData = {
+  _id: Id<"pages">;
+  title: string;
+  icon?: string;
+  isArchived: boolean;
+  isPublished: boolean;
+};
+
 function PageItem({
   page,
   isActive,
@@ -212,7 +220,7 @@ export function Sidebar() {
           </p>
         )}
 
-        {pages?.map((page) => (
+        {pages?.map((page: PageData) => (
           <PageItem
             key={page._id}
             page={page}
@@ -242,7 +250,7 @@ export function Sidebar() {
             {archivedPages?.length === 0 && (
               <p className="text-xs text-gray-400 px-2 py-1">Trash is empty</p>
             )}
-            {archivedPages?.map((page) => (
+            {archivedPages?.map((page: PageData) => (
               <div
                 key={page._id}
                 className="flex items-center justify-between px-2 py-1.5 rounded-md text-sm text-gray-500 hover:bg-gray-200 transition-colors"
