@@ -7,16 +7,19 @@ import authConfig from "./auth.config";
 
 export const authComponent = createClient<DataModel>(components.betterAuth);
 
-function getBaseUrl() {
-  const url = process.env.NEXT_PUBLIC_APP_URL ?? "";
+function getBaseUrl(): string | undefined {
+  const url = process.env.NEXT_PUBLIC_APP_URL;
+  if (!url) return undefined;
   return url.replace(/\/$/, "");
 }
 
-export const createAuth = (ctx: GenericCtx<DataModel>) =>
-  betterAuth({
-    baseURL: getBaseUrl(),
+export const createAuth = (ctx: GenericCtx<DataModel>) => {
+  const baseUrl = getBaseUrl();
+
+  return betterAuth({
+    ...(baseUrl ? { baseURL: baseUrl } : {}),
     trustedOrigins: [
-      getBaseUrl(),
+      ...(baseUrl ? [baseUrl] : []),
       "*.replit.dev",
       "*.replit.app",
       "*.sisko.replit.dev",
@@ -30,5 +33,6 @@ export const createAuth = (ctx: GenericCtx<DataModel>) =>
       convex({ authConfig }),
     ],
   } satisfies BetterAuthOptions);
+};
 
 export const { getAuthUser } = authComponent.clientApi();
