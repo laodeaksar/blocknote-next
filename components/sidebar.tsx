@@ -310,6 +310,8 @@ export function Sidebar() {
 
 export function MobileSidebar() {
   const [open, setOpen] = useState(false);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
 
   useEffect(() => {
     if (open) {
@@ -321,6 +323,22 @@ export function MobileSidebar() {
       document.body.style.overflow = "";
     };
   }, [open]);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const dy = Math.abs(e.changedTouches[0].clientY - touchStartY.current);
+    if (dx < -60 && dy < 80) {
+      setOpen(false);
+    }
+    touchStartX.current = null;
+    touchStartY.current = null;
+  };
 
   return (
     <>
@@ -339,7 +357,11 @@ export function MobileSidebar() {
             onClick={() => setOpen(false)}
           />
 
-          <div className="relative w-[85vw] max-w-sm h-[75vh] max-h-[600px] bg-[#f7f7f5] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 animate-in fade-in zoom-in-95 duration-200">
+          <div
+            className="relative w-[85vw] max-w-sm h-[75vh] max-h-[600px] bg-[#f7f7f5] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 animate-in fade-in zoom-in-95 duration-200"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
             <button
               onClick={() => setOpen(false)}
               className="absolute top-3 right-3 z-10 w-7 h-7 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
