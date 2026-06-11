@@ -14,6 +14,7 @@ import {
   Settings,
   Menu,
   X,
+  FilePlus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useState, useRef, useEffect } from "react";
@@ -312,6 +313,14 @@ export function MobileSidebar() {
   const [open, setOpen] = useState(false);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
+  const router = useRouter();
+  const createPage = useMutation(api.pages.create);
+
+  const handleCreate = async () => {
+    const id = await createPage({ title: "Untitled" });
+    router.push(`/doc/${id}`);
+    toast.success("New page created");
+  };
 
   useEffect(() => {
     if (open) {
@@ -342,14 +351,22 @@ export function MobileSidebar() {
 
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 px-5 py-3 bg-white border border-gray-200 rounded-full shadow-lg hover:bg-gray-50 transition-colors"
-        aria-label="Open menu"
-      >
-        <Menu className="w-4 h-4 text-gray-700" />
-        <span className="text-sm font-medium text-gray-700">Menu</span>
-      </button>
+      <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2">
+        <button
+          onClick={handleCreate}
+          className="w-11 h-11 bg-black text-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-800 transition-colors"
+          aria-label="New page"
+        >
+          <FilePlus className="w-4 h-4" />
+        </button>
+        <button
+          onClick={() => setOpen(true)}
+          className="w-11 h-11 bg-white border border-gray-200 rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
+          aria-label="Open menu"
+        >
+          <Menu className="w-4 h-4 text-gray-700" />
+        </button>
+      </div>
 
       {open && (
         <div className="md:hidden fixed inset-0 z-50 flex items-center justify-center">
