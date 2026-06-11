@@ -19,7 +19,7 @@ export default async function DocPage({ params }: Props) {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <Navbar pageId={id as Id<"pages">} />
         <div className="flex-1 overflow-y-auto">
-          <div className="max-w-4xl mx-auto py-16 px-8 md:px-16">
+          <div className="max-w-4xl mx-auto py-16 pl-14 pr-4 md:px-16">
             <EditorWrapper pageId={id as Id<"pages">} />
           </div>
         </div>

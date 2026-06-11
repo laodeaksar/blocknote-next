@@ -344,10 +344,11 @@ export function MobileSidebar() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="md:hidden fixed top-3 left-3 z-40 w-9 h-9 flex items-center justify-center bg-white border border-gray-200 rounded-lg shadow-md hover:bg-gray-50 transition-colors"
+        className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 px-5 py-3 bg-white border border-gray-200 rounded-full shadow-lg hover:bg-gray-50 transition-colors"
         aria-label="Open menu"
       >
         <Menu className="w-4 h-4 text-gray-700" />
+        <span className="text-sm font-medium text-gray-700">Menu</span>
       </button>
 
       {open && (
