@@ -2,12 +2,11 @@
 
 import "@blocknote/mantine/style.css";
 import { BlockNoteView } from "@blocknote/mantine";
-import { useCreateBlockNote } from "@blocknote/react";
-import { useMutation, useQuery } from "convex/react";
-import { useDebouncedCallback } from "use-debounce";
-import { useEffect, useState } from "react";
+import { useBlockNoteSync } from "@convex-dev/prosemirror-sync/blocknote";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
+
+const EMPTY_DOC = { type: "doc", content: [] };
 
 interface EditorProps {
   pageId: Id<"pages">;
@@ -15,40 +14,9 @@ interface EditorProps {
 }
 
 export function Editor({ pageId, editable = true }: EditorProps) {
-  const blocks = useQuery(api.blocks.list, { pageId });
-  const upsertBlock = useMutation(api.blocks.upsert);
-  const [isSaving, setIsSaving] = useState(false);
-  const [isReady, setIsReady] = useState(false);
+  const sync = useBlockNoteSync(api.prosemirrorSync, pageId);
 
-  const editor = useCreateBlockNote({
-    initialContent:
-      blocks && blocks.length > 0 ? blocks[0].content : undefined,
-  });
-
-  useEffect(() => {
-    if (blocks !== undefined && !isReady) {
-      setIsReady(true);
-    }
-  }, [blocks, isReady]);
-
-  const debouncedSave = useDebouncedCallback(async (content: unknown) => {
-    setIsSaving(true);
-    try {
-      await upsertBlock({ pageId, content });
-    } finally {
-      setIsSaving(false);
-    }
-  }, 500);
-
-  useEffect(() => {
-    if (!editor || !isReady) return;
-    const unsubscribe = editor.onChange(() => {
-      debouncedSave(editor.document);
-    });
-    return unsubscribe;
-  }, [editor, debouncedSave, isReady]);
-
-  if (blocks === undefined) {
+  if (sync.isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin" />
@@ -56,18 +24,24 @@ export function Editor({ pageId, editable = true }: EditorProps) {
     );
   }
 
+  if (!sync.editor) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <button
+          onClick={() => sync.create(EMPTY_DOC)}
+          className="px-4 py-2 text-sm bg-gray-900 text-white rounded-md hover:bg-gray-700 transition-colors"
+        >
+          Start writing
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="relative">
-      {isSaving && (
-        <span className="absolute top-2 right-2 text-xs text-gray-400 z-10">
-          Saving…
-        </span>
-      )}
-      <BlockNoteView
-        editor={editor}
-        theme="light"
-        editable={editable}
-      />
-    </div>
+    <BlockNoteView
+      editor={sync.editor}
+      theme="light"
+      editable={editable}
+    />
   );
 }

@@ -25,7 +25,7 @@ globalThis.__BUILD_MANIFEST = {
     "static/chunks/turbopack-_0vahdbb._.js"
   ],
   "rootMainFilesTree": {
-    "/(auth)/sign-in/[[...sign-in]]/page": [
+    "/page": [
       "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_1u9mah2._.js",
       "static/chunks/1yw4_next_dist_compiled_next-devtools_index_1c6du4l.js",
       "static/chunks/1yw4_next_dist_compiled_react-dom_1swllcv._.js",
@@ -37,7 +37,7 @@ globalThis.__BUILD_MANIFEST = {
       "static/chunks/0vvp_@swc_helpers_cjs_0vb02wp._.js",
       "static/chunks/_1anvha4._.js",
       "static/chunks/turbopack-_0vahdbb._.js",
-      "static/chunks/_1d31zj_._.js"
+      "static/chunks/_219uq1s._.js"
     ]
   }
 };
