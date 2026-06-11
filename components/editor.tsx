@@ -1,8 +1,8 @@
 "use client";
 
 import "@blocknote/shadcn/style.css";
-import { BlockNoteView, SideMenu } from "@blocknote/shadcn";
-import { SideMenuController, DragHandleButton } from "@blocknote/react";
+import { BlockNoteView } from "@blocknote/shadcn";
+import { SideMenuController, DragHandleButton, SideMenu } from "@blocknote/react";
 import { useBlockNoteSync } from "@convex-dev/prosemirror-sync/blocknote";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
