@@ -12,6 +12,8 @@ import {
   ChevronDown,
   Search,
   Settings,
+  Menu,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useState, useRef, useEffect } from "react";
@@ -130,7 +132,7 @@ function PageItem({
   );
 }
 
-export function Sidebar() {
+function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const router = useRouter();
   const params = useParams();
   const currentId = params?.id as string | undefined;
@@ -148,6 +150,7 @@ export function Sidebar() {
     const id = await createPage({ title: "Untitled" });
     router.push(`/doc/${id}`);
     toast.success("New page created");
+    onNavigate?.();
   };
 
   const handleArchive = async (e: React.MouseEvent, id: Id<"pages">) => {
@@ -169,8 +172,13 @@ export function Sidebar() {
     toast.success("Page permanently deleted");
   };
 
+  const navigate = (path: string) => {
+    router.push(path);
+    onNavigate?.();
+  };
+
   return (
-    <aside className="flex flex-col w-60 h-full bg-[#f7f7f5] border-r border-gray-200 shrink-0">
+    <>
       <div className="flex items-center justify-between px-3 py-2 mt-1">
         <div className="flex items-center gap-2">
           <div className="w-6 h-6 bg-black rounded-md flex items-center justify-center">
@@ -225,7 +233,7 @@ export function Sidebar() {
             key={page._id}
             page={page}
             isActive={currentId === page._id}
-            onNavigate={() => router.push(`/doc/${page._id}`)}
+            onNavigate={() => navigate(`/doc/${page._id}`)}
             onArchive={(e) => handleArchive(e, page._id)}
           />
         ))}
@@ -288,6 +296,62 @@ export function Sidebar() {
           New page
         </button>
       </div>
+    </>
+  );
+}
+
+export function Sidebar() {
+  return (
+    <aside className="hidden md:flex flex-col w-60 h-full bg-[#f7f7f5] border-r border-gray-200 shrink-0">
+      <SidebarContent />
     </aside>
+  );
+}
+
+export function MobileSidebar() {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className="md:hidden fixed top-3 left-3 z-40 w-9 h-9 flex items-center justify-center bg-white border border-gray-200 rounded-lg shadow-md hover:bg-gray-50 transition-colors"
+        aria-label="Open menu"
+      >
+        <Menu className="w-4 h-4 text-gray-700" />
+      </button>
+
+      {open && (
+        <div className="md:hidden fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setOpen(false)}
+          />
+
+          <div className="relative w-[85vw] max-w-sm h-[75vh] max-h-[600px] bg-[#f7f7f5] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 animate-in fade-in zoom-in-95 duration-200">
+            <button
+              onClick={() => setOpen(false)}
+              className="absolute top-3 right-3 z-10 w-7 h-7 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
+              aria-label="Close menu"
+            >
+              <X className="w-3.5 h-3.5 text-gray-600" />
+            </button>
+
+            <SidebarContent onNavigate={() => setOpen(false)} />
+          </div>
+        </div>
+      )}
+    </>
   );
 }

@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { Sidebar } from "@/components/sidebar";
+import { Sidebar, MobileSidebar } from "@/components/sidebar";
 import { Navbar } from "@/components/navbar";
 import { EditorWrapper } from "@/components/editor-wrapper";
 import type { Id } from "@/convex/_generated/dataModel";
@@ -15,6 +15,7 @@ export default async function DocPage({ params }: Props) {
   return (
     <div className="flex h-screen bg-white overflow-hidden">
       <Sidebar />
+      <MobileSidebar />
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <Navbar pageId={id as Id<"pages">} />
         <div className="flex-1 overflow-y-auto">

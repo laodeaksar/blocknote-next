@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { Sidebar } from "@/components/sidebar";
+import { Sidebar, MobileSidebar } from "@/components/sidebar";
 import { FileText, Plus } from "lucide-react";
 
 export default async function DashboardPage() {
@@ -10,6 +10,7 @@ export default async function DashboardPage() {
   return (
     <div className="flex h-screen bg-white">
       <Sidebar />
+      <MobileSidebar />
       <main className="flex-1 flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="flex justify-center">
