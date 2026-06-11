@@ -1285,10 +1285,6 @@
     left: calc(var(--spacing) * 2);
   }
 
-  .left-3 {
-    left: calc(var(--spacing) * 3);
-  }
-
   .left-\[15\%\] {
     left: 15%;
   }
@@ -7907,6 +7903,18 @@ html, body {
 
 .bn-editor {
   padding: 0 !important;
+}
+
+@media (max-width: 768px) {
+  .bn-side-menu button:last-child {
+    display: none !important;
+  }
+
+  .bn-slash-menu {
+    width: calc(100vw - 48px) !important;
+    min-width: 0 !important;
+    max-width: calc(100vw - 48px) !important;
+  }
 }
 
 @property --tw-translate-x {

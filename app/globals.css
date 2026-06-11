@@ -29,3 +29,15 @@ body {
 .bn-editor {
   padding: 0 !important;
 }
+
+@media (max-width: 768px) {
+  .bn-side-menu button:last-child {
+    display: none !important;
+  }
+
+  .bn-slash-menu {
+    width: calc(100vw - 48px) !important;
+    max-width: calc(100vw - 48px) !important;
+    min-width: 0 !important;
+  }
+}
