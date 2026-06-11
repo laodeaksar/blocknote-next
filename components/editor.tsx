@@ -6,6 +6,7 @@ import { SideMenuController, DragHandleButton } from "@blocknote/react";
 import { useBlockNoteSync } from "@convex-dev/prosemirror-sync/blocknote";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
+import { useTheme } from "@/lib/theme";
 
 const EMPTY_DOC = { type: "doc", content: [] };
 
@@ -16,6 +17,7 @@ interface EditorProps {
 
 export function Editor({ pageId, editable = true }: EditorProps) {
   const sync = useBlockNoteSync(api.prosemirrorSync, pageId);
+  const { resolvedTheme } = useTheme();
 
   if (sync.isLoading) {
     return (
@@ -39,7 +41,12 @@ export function Editor({ pageId, editable = true }: EditorProps) {
   }
 
   return (
-    <BlockNoteView editor={sync.editor} editable={editable} sideMenu={false}>
+    <BlockNoteView
+      editor={sync.editor}
+      editable={editable}
+      theme={resolvedTheme}
+      sideMenu={false}
+    >
       <SideMenuController
         sideMenu={(props) => (
           <SideMenu {...props}>

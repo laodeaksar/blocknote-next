@@ -24,6 +24,7 @@ body {
     "Segoe UI Symbol";
   background-color: #ffffff;
   color: #171717;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .bn-editor {
@@ -55,4 +56,87 @@ body {
 
 .swipe-indicator {
   animation: swipe-hint 2s ease-in-out 1.2s 3;
+}
+
+/* ===== Dark Mode ===== */
+[data-theme="dark"] body {
+  background-color: #191919;
+  color: #e8e8e7;
+}
+
+[data-theme="dark"] aside {
+  background-color: #1f1f1f !important;
+  border-color: #2e2e2e !important;
+}
+
+[data-theme="dark"] aside span,
+[data-theme="dark"] aside p {
+  color: #9b9a97;
+}
+
+[data-theme="dark"] aside .text-gray-900,
+[data-theme="dark"] aside .text-gray-800,
+[data-theme="dark"] aside .text-gray-700,
+[data-theme="dark"] aside .text-gray-600 {
+  color: #e8e8e7 !important;
+}
+
+[data-theme="dark"] aside .text-gray-500,
+[data-theme="dark"] aside .text-gray-400 {
+  color: #6b6b6b !important;
+}
+
+[data-theme="dark"] aside .bg-gray-200,
+[data-theme="dark"] aside .hover\:bg-gray-200:hover {
+  background-color: #2e2e2e !important;
+}
+
+[data-theme="dark"] aside .bg-gray-300,
+[data-theme="dark"] aside .hover\:bg-gray-300:hover {
+  background-color: #3a3a3a !important;
+}
+
+[data-theme="dark"] aside .border-gray-200 {
+  border-color: #2e2e2e !important;
+}
+
+[data-theme="dark"] aside .text-white {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] aside .bg-white {
+  background-color: #2e2e2e !important;
+  color: #e8e8e7 !important;
+  border-color: #4a4a4a !important;
+}
+
+[data-theme="dark"] .dark-nav {
+  background-color: #191919 !important;
+  border-color: #2e2e2e !important;
+}
+
+[data-theme="dark"] .dark-nav span,
+[data-theme="dark"] .dark-nav .text-gray-700 {
+  color: #e8e8e7 !important;
+}
+
+[data-theme="dark"] .dark-nav .text-gray-500 {
+  color: #6b6b6b !important;
+}
+
+[data-theme="dark"] .dark-nav .border-gray-200 {
+  border-color: #2e2e2e !important;
+}
+
+[data-theme="dark"] .dark-nav .hover\:bg-gray-50:hover,
+[data-theme="dark"] .dark-nav .hover\:bg-gray-100:hover {
+  background-color: #2e2e2e !important;
+}
+
+[data-theme="dark"] main {
+  background-color: #191919;
+}
+
+[data-theme="dark"] .flex-1.flex.flex-col {
+  background-color: #191919;
 }

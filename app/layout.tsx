@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { ConvexClientProvider } from "@/lib/convex";
+import { ThemeProvider } from "@/lib/theme";
 import { Toaster } from "sonner";
 import { ServiceWorkerRegister } from "@/app/sw-register";
 import { SplashScreen } from "@/app/splash-screen";
@@ -85,8 +86,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var s=localStorage.getItem('theme');var d=s==='light'||s==='dark'?s:(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',d);})();`,
+          }}
+        />
         <style
           dangerouslySetInnerHTML={{
             __html: `
@@ -132,10 +138,12 @@ export default function RootLayout({
           <p>Notion Clone</p>
         </div>
 
-        <ConvexClientProvider>
-          {children}
-          <Toaster richColors position="bottom-right" />
-        </ConvexClientProvider>
+        <ThemeProvider>
+          <ConvexClientProvider>
+            {children}
+            <Toaster richColors position="bottom-right" />
+          </ConvexClientProvider>
+        </ThemeProvider>
         <SplashScreen />
         <ServiceWorkerRegister />
       </body>
