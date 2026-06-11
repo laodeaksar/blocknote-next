@@ -18,13 +18,24 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
 
   return betterAuth({
     ...(baseUrl ? { baseURL: baseUrl } : {}),
-    trustedOrigins: [
-      ...(baseUrl ? [baseUrl] : []),
-      "*.replit.dev",
-      "*.replit.app",
-      "*.sisko.replit.dev",
-      "*.pike.replit.dev",
-    ],
+    trustedOrigins: async (request) => {
+      const origins: string[] = [
+        "https://*.replit.dev",
+        "https://*.replit.app",
+        "https://*.sisko.replit.dev",
+        "https://*.pike.replit.dev",
+      ];
+
+      if (baseUrl) origins.push(baseUrl);
+
+      const forwardedHost = request?.headers.get("x-better-auth-forwarded-host");
+      const forwardedProto = request?.headers.get("x-better-auth-forwarded-proto") ?? "https";
+      if (forwardedHost) {
+        origins.push(`${forwardedProto}://${forwardedHost}`);
+      }
+
+      return origins;
+    },
     database: authComponent.adapter(ctx),
     emailAndPassword: {
       enabled: true,
