@@ -7,9 +7,21 @@ import authConfig from "./auth.config";
 
 export const authComponent = createClient<DataModel>(components.betterAuth);
 
+function getBaseUrl() {
+  const url = process.env.NEXT_PUBLIC_APP_URL ?? "";
+  return url.replace(/\/$/, "");
+}
+
 export const createAuth = (ctx: GenericCtx<DataModel>) =>
   betterAuth({
-    baseURL: process.env.NEXT_PUBLIC_APP_URL,
+    baseURL: getBaseUrl(),
+    trustedOrigins: [
+      getBaseUrl(),
+      "*.replit.dev",
+      "*.replit.app",
+      "*.sisko.replit.dev",
+      "*.pike.replit.dev",
+    ],
     database: authComponent.adapter(ctx),
     emailAndPassword: {
       enabled: true,
