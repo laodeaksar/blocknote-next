@@ -2,15 +2,17 @@
 /**
  * Stub — run `npx convex dev --once` to generate the real file.
  */
-export {
-  action,
-  internalAction,
-  internalMutation,
-  internalQuery,
-  mutation,
-  query,
-  httpAction,
+import {
+  queryGeneric as query,
+  mutationGeneric as mutation,
+  actionGeneric as action,
+  internalQueryGeneric as internalQuery,
+  internalMutationGeneric as internalMutation,
+  internalActionGeneric as internalAction,
+  httpActionGeneric as httpAction,
 } from "convex/server";
+
+export { query, mutation, action, internalQuery, internalMutation, internalAction, httpAction };
 
 import type { DataModel } from "./dataModel";
 import type {
