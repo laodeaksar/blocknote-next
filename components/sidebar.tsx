@@ -15,10 +15,13 @@ import {
   Menu,
   X,
   FilePlus,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useState, useRef, useEffect } from "react";
 import { UserMenu } from "@/components/user-menu";
+import { useTheme } from "@/lib/theme";
 
 type PageData = {
   _id: Id<"pages">;
@@ -311,90 +314,128 @@ export function Sidebar() {
 
 export function MobileSidebar() {
   const [open, setOpen] = useState(false);
-  const touchStartX = useRef<number | null>(null);
-  const touchStartY = useRef<number | null>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
+  const barRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const params = useParams();
+  const currentId = params?.id as string | undefined;
+  const pages = useQuery(api.pages.list);
   const createPage = useMutation(api.pages.create);
+  const { resolvedTheme, setTheme } = useTheme();
 
   const handleCreate = async () => {
     const id = await createPage({ title: "Untitled" });
     router.push(`/doc/${id}`);
     toast.success("New page created");
+    setOpen(false);
   };
 
   useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    if (!open) return;
+    const handler = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as Node;
+      if (
+        popoverRef.current?.contains(target) ||
+        barRef.current?.contains(target)
+      ) return;
+      setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    document.addEventListener("touchstart", handler, { passive: true });
     return () => {
-      document.body.style.overflow = "";
+      document.removeEventListener("mousedown", handler);
+      document.removeEventListener("touchstart", handler);
     };
   }, [open]);
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-    touchStartY.current = e.touches[0].clientY;
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current === null || touchStartY.current === null) return;
-    const dx = e.changedTouches[0].clientX - touchStartX.current;
-    const dy = Math.abs(e.changedTouches[0].clientY - touchStartY.current);
-    if (dx < -60 && dy < 80) {
-      setOpen(false);
-    }
-    touchStartX.current = null;
-    touchStartY.current = null;
-  };
-
   return (
     <>
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex items-stretch h-14 bg-white border-t border-gray-200 mobile-bottom-bar">
-        <button
-          onClick={() => setOpen(true)}
-          className="mobile-fab flex-1 flex flex-col items-center justify-center gap-0.5 text-gray-500 hover:bg-gray-50 active:bg-gray-100 transition-colors"
-          aria-label="Open menu"
-        >
-          <Menu className="w-5 h-5" />
-          <span className="text-[10px] font-medium">Menu</span>
-        </button>
-        <div className="w-px bg-gray-200 self-stretch my-2" />
-        <button
-          onClick={handleCreate}
-          className="mobile-fab flex-1 flex flex-col items-center justify-center gap-0.5 text-gray-500 hover:bg-gray-50 active:bg-gray-100 transition-colors"
-          aria-label="New page"
-        >
-          <FilePlus className="w-5 h-5" />
-          <span className="text-[10px] font-medium">New Page</span>
-        </button>
-      </div>
-
       {open && (
-        <div className="md:hidden fixed inset-0 z-50 flex items-center justify-center">
-          <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={() => setOpen(false)}
-          />
-
-          <div
-            className="relative w-[85vw] max-w-sm h-[75vh] max-h-[600px] bg-[#f7f7f5] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 animate-in fade-in zoom-in-95 duration-200"
-            onTouchStart={handleTouchStart}
-            onTouchEnd={handleTouchEnd}
-          >
+        <div
+          ref={popoverRef}
+          className="md:hidden fixed bottom-20 left-1/2 -translate-x-1/2 z-50 w-72 rounded-2xl shadow-2xl border border-gray-200 overflow-hidden bg-white mobile-popover"
+          style={{ animation: "popover-in 0.15s ease" }}
+        >
+          <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-100">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 bg-black rounded flex items-center justify-center shrink-0">
+                <span className="text-white text-[10px] font-bold">N</span>
+              </div>
+              <span className="text-sm font-semibold text-gray-800">Workspace</span>
+            </div>
             <button
-              onClick={() => setOpen(false)}
-              className="absolute top-3 right-3 z-10 w-7 h-7 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
-              aria-label="Close menu"
+              onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+              className="p-1.5 rounded-md hover:bg-gray-100 transition-colors"
             >
-              <X className="w-3.5 h-3.5 text-gray-600" />
+              {resolvedTheme === "dark"
+                ? <Sun className="w-4 h-4 text-gray-500" />
+                : <Moon className="w-4 h-4 text-gray-500" />}
             </button>
+          </div>
 
-            <SidebarContent onNavigate={() => setOpen(false)} />
+          <div className="max-h-56 overflow-y-auto py-1">
+            {pages === undefined && (
+              <div className="space-y-1.5 px-3 py-2">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-7 bg-gray-100 rounded-md animate-pulse" />
+                ))}
+              </div>
+            )}
+            {pages?.length === 0 && (
+              <p className="text-xs text-gray-400 px-4 py-3">No pages yet.</p>
+            )}
+            {pages?.map((page: PageData) => (
+              <button
+                key={page._id}
+                onClick={() => { router.push(`/doc/${page._id}`); setOpen(false); }}
+                className={`w-full flex items-center gap-2.5 px-4 py-2 text-sm text-left transition-colors ${
+                  currentId === page._id
+                    ? "bg-gray-100 text-gray-900"
+                    : "text-gray-700 hover:bg-gray-50"
+                }`}
+              >
+                {page.icon
+                  ? <span className="text-sm shrink-0">{page.icon}</span>
+                  : <FileText className="w-4 h-4 text-gray-400 shrink-0" />}
+                <span className="truncate">{page.title || "Untitled"}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="border-t border-gray-100 p-1.5">
+            <button
+              onClick={handleCreate}
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              New Page
+            </button>
           </div>
         </div>
       )}
+
+      <div
+        ref={barRef}
+        className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center h-12 bg-white border border-gray-200 rounded-full shadow-lg px-1 mobile-pill-bar"
+      >
+        <button
+          onClick={() => setOpen((v) => !v)}
+          className={`mobile-fab w-10 h-10 flex items-center justify-center rounded-full transition-colors ${
+            open ? "bg-gray-100 text-gray-900" : "text-gray-600 hover:bg-gray-50"
+          }`}
+          aria-label="Toggle menu"
+        >
+          {open ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+        </button>
+        <div className="w-px h-5 bg-gray-200 mx-0.5" />
+        <button
+          onClick={handleCreate}
+          className="mobile-fab w-10 h-10 flex items-center justify-center rounded-full text-gray-600 hover:bg-gray-50 transition-colors"
+          aria-label="New page"
+        >
+          <FilePlus className="w-4 h-4" />
+        </button>
+      </div>
     </>
   );
 }

@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import Script from "next/script";
 import { ConvexClientProvider } from "@/lib/convex";
 import { ThemeProvider } from "@/lib/theme";
 import { Toaster } from "sonner";
@@ -125,13 +124,6 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
-        <Script
-          id="theme-init"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var s=localStorage.getItem('theme');var d=s==='light'||s==='dark'?s:(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',d);}catch(e){}})();`,
-          }}
-        />
         <div id="app-splash" aria-hidden="true">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" fill="none">
             <path d="m297.49998,89.75001l0,0c46.9,0 85,38.1 85,85l0,250.5c0,46.9 -38.1,85 -85,85l0,0c-46.9,0 -85,-38.1 -85,-85l0,-250.5c0,-47 38,-85 85,-85z" strokeMiterlimit="10" strokeWidth="20" stroke="#000000" />
