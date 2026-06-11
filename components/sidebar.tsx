@@ -354,14 +354,14 @@ export function MobileSidebar() {
       <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2">
         <button
           onClick={handleCreate}
-          className="w-11 h-11 bg-black text-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-800 transition-colors"
+          className="mobile-fab w-11 h-11 bg-black text-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-800"
           aria-label="New page"
         >
           <FilePlus className="w-4 h-4" />
         </button>
         <button
           onClick={() => setOpen(true)}
-          className="w-11 h-11 bg-white border border-gray-200 rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
+          className="mobile-fab w-11 h-11 bg-white border border-gray-200 rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50"
           aria-label="Open menu"
         >
           <Menu className="w-4 h-4 text-gray-700" />

@@ -7921,6 +7921,15 @@ html, body {
   }
 }
 
+.mobile-fab {
+  transition: transform .12s, box-shadow .12s;
+}
+
+.mobile-fab:active {
+  transform: scale(.88);
+  box-shadow: 0 1px 4px #0000002e !important;
+}
+
 @property --tw-translate-x {
   syntax: "*";
   inherits: false;
