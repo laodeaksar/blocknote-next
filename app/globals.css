@@ -6,8 +6,17 @@
   --color-sidebar: #f7f7f5;
   --color-sidebar-hover: #ebebea;
   --color-border: #e9e9e7;
-  --color-muted: #9b9a97;
+  --color-muted: #f3f3f1;
+  --color-muted-foreground: #9b9a97;
   --color-accent: #2383e2;
+  --color-accent-foreground: #ffffff;
+  --color-primary: #171717;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #f3f3f1;
+  --color-secondary-foreground: #4a4a4a;
+  --color-destructive: #e5534b;
+  --color-ring: #2383e2;
+  --color-input: #e9e9e7;
 }
 
 * {

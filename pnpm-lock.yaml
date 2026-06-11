@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@base-ui/react':
+        specifier: ^1.5.0
+        version: 1.5.0(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@blocknote/core':
         specifier: ^0.51.4
         version: 0.51.4(@types/hast@3.0.4)
@@ -35,6 +38,9 @@ importers:
       better-auth:
         specifier: ^1.6.16
         version: 1.6.16(next@16.3.0-canary.47(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      class-variance-authority:
+        specifier: ^0.7.1
+        version: 0.7.1
       clsx:
         specifier: ^2
         version: 2.1.1
@@ -59,6 +65,9 @@ importers:
       sonner:
         specifier: ^2
         version: 2.0.7(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      tailwind-merge:
+        specifier: ^3.6.0
+        version: 3.6.0
       tailwindcss:
         specifier: ^4
         version: 4.3.0
@@ -84,6 +93,37 @@ packages:
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
+
+  '@babel/runtime@7.29.7':
+    resolution: {integrity: sha512-Nq8OhGWiZIZGV6hLHoyAKLLcJihP/xFeBMGJoUrxTX2psI8dCifzLhZISFb+VWS3wFMRDmCGw5R+dOySCqPLhw==}
+    engines: {node: '>=6.9.0'}
+
+  '@base-ui/react@1.5.0':
+    resolution: {integrity: sha512-z1gSAlced1yY+iM+mHDEtIkD8UI3Ebs52MuBPxvV6f5hRutk+xvCH/wuB7hDqDzK9JG5FoMz5nhrqtSs1wjt1A==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      '@date-fns/tz': ^1.2.0
+      '@types/react': ^17 || ^18 || ^19
+      date-fns: ^4.0.0
+      react: ^17 || ^18 || ^19
+      react-dom: ^17 || ^18 || ^19
+    peerDependenciesMeta:
+      '@date-fns/tz':
+        optional: true
+      '@types/react':
+        optional: true
+      date-fns:
+        optional: true
+
+  '@base-ui/utils@0.2.9':
+    resolution: {integrity: sha512-x/PDDCYzoqPpjrdyb3VcyylTI2IjUXEtYDGi5foh7KsnmNJIIaVwA2GLgDH1dps1GgXiJbA60hM+AyuTfQzIvw==}
+    peerDependencies:
+      '@types/react': ^17 || ^18 || ^19
+      react: ^17 || ^18 || ^19
+      react-dom: ^17 || ^18 || ^19
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
 
   '@better-auth/core@1.6.16':
     resolution: {integrity: sha512-a0+ZNaaYYxOdFXFXmOE36TgtYN8QDzSYDozaAH0zsiWB0oyljsENyCxHJSekysISftb0rFpVXNdw525aEAOa6w==}
@@ -1780,6 +1820,9 @@ packages:
     resolution: {integrity: sha512-3Ki8dU1o3OVu4dwIQ2Pj+yiuP7OnEbmWAGmJ3yDRqopily5jsj8NWzPvbS89H85d6UdONKEcUnrfuHY6jN9vyw==}
     engines: {node: '>=18.0.0'}
 
+  reselect@5.2.0:
+    resolution: {integrity: sha512-AgZ3UOZm3YndfrJ4OYjgrT7bmCm/1iqkjvEfH/oYjzh6PD2qw4QuT3jjnXIrpdt4MTpMXclMT3lXbmRY+XRakw==}
+
   rope-sequence@1.3.4:
     resolution: {integrity: sha512-UT5EDe2cu2E/6O4igUr5PSFs23nvvukicWHx6GnOPlHAiiYbzNuCRQCuiUdHJQcqKalLKlrYJnjY0ySGsXNQXQ==}
 
@@ -1841,6 +1884,9 @@ packages:
 
   tailwind-merge@2.6.1:
     resolution: {integrity: sha512-Oo6tHdpZsGpkKG88HJ8RR1rg/RdnEkQEfMoEk2x1XRI3F1AxeU+ijRXpiVUF4UbLfcxxRGw6TbUINKYdWVsQTQ==}
+
+  tailwind-merge@3.6.0:
+    resolution: {integrity: sha512-uxL7qAVQriqRQPAyK3pj66VqskWqoZ37PW94jwOTwNfq/z9oyu1V+eqrZqtR2+fCiXdYOZe/Modt8GtvqNzu+w==}
 
   tailwindcss@4.3.0:
     resolution: {integrity: sha512-y6nxMGB1nMW9R6k96e5gdIFzcfL/gTJRNaqGes1YvkLnPVXzWgbqFF2yLC0T8G774n24cx3Pe8XrKoniCOAH+Q==}
@@ -1936,6 +1982,31 @@ packages:
 snapshots:
 
   '@alloc/quick-lru@5.2.0': {}
+
+  '@babel/runtime@7.29.7': {}
+
+  '@base-ui/react@1.5.0(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+    dependencies:
+      '@babel/runtime': 7.29.7
+      '@base-ui/utils': 0.2.9(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@floating-ui/react-dom': 2.1.8(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@floating-ui/utils': 0.2.11
+      react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
+      use-sync-external-store: 1.6.0(react@19.2.7)
+    optionalDependencies:
+      '@types/react': 19.2.17
+
+  '@base-ui/utils@0.2.9(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+    dependencies:
+      '@babel/runtime': 7.29.7
+      '@floating-ui/utils': 0.2.11
+      react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
+      reselect: 5.2.0
+      use-sync-external-store: 1.6.0(react@19.2.7)
+    optionalDependencies:
+      '@types/react': 19.2.17
 
   '@better-auth/core@1.6.16(@better-auth/utils@0.4.1)(@better-fetch/fetch@1.2.2)(better-call@1.3.6(zod@4.4.3))(jose@6.2.3)(kysely@0.29.2)(nanostores@1.3.0)':
     dependencies:
@@ -3464,6 +3535,8 @@ snapshots:
 
   remeda@2.39.0: {}
 
+  reselect@5.2.0: {}
+
   rope-sequence@1.3.4: {}
 
   rou3@0.7.12: {}
@@ -3533,6 +3606,8 @@ snapshots:
   tagged-tag@1.0.0: {}
 
   tailwind-merge@2.6.1: {}
+
+  tailwind-merge@3.6.0: {}
 
   tailwindcss@4.3.0: {}
 
