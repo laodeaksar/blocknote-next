@@ -382,7 +382,7 @@ export function MobileSidebar() {
   return (
     <>
       {!open && (
-        <div className="md:hidden fixed bottom-1.5 left-1/2 -translate-x-1/2 z-40 w-10 h-1 bg-gray-400/50 rounded-full" />
+        <div className="swipe-indicator md:hidden fixed bottom-1.5 left-1/2 -translate-x-1/2 z-40 w-10 h-1 bg-gray-400/50 rounded-full" />
       )}
       <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2">
         <button
