@@ -1,7 +1,8 @@
 "use client";
 
-import "@blocknote/mantine/style.css";
-import { BlockNoteView } from "@blocknote/mantine";
+import "@blocknote/shadcn/style.css";
+import { BlockNoteView, SideMenu } from "@blocknote/shadcn";
+import { SideMenuController, DragHandleButton } from "@blocknote/react";
 import { useBlockNoteSync } from "@convex-dev/prosemirror-sync/blocknote";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
@@ -38,10 +39,14 @@ export function Editor({ pageId, editable = true }: EditorProps) {
   }
 
   return (
-    <BlockNoteView
-      editor={sync.editor}
-      theme="light"
-      editable={editable}
-    />
+    <BlockNoteView editor={sync.editor} editable={editable} sideMenu={false}>
+      <SideMenuController
+        sideMenu={(props) => (
+          <SideMenu {...props}>
+            <DragHandleButton {...props} />
+          </SideMenu>
+        )}
+      />
+    </BlockNoteView>
   );
 }
