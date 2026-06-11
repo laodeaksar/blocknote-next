@@ -333,6 +333,36 @@ export function MobileSidebar() {
     };
   }, [open]);
 
+  useEffect(() => {
+    if (open) return;
+    let startX: number | null = null;
+    let startY: number | null = null;
+    let startFromBottom = false;
+
+    const onStart = (e: TouchEvent) => {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      startFromBottom = startY > window.innerHeight - 100;
+    };
+
+    const onEnd = (e: TouchEvent) => {
+      if (startY === null || startX === null || !startFromBottom) return;
+      const dy = startY - e.changedTouches[0].clientY;
+      const dx = Math.abs(e.changedTouches[0].clientX - startX);
+      if (dy > 50 && dx < 60) setOpen(true);
+      startX = null;
+      startY = null;
+      startFromBottom = false;
+    };
+
+    document.addEventListener("touchstart", onStart, { passive: true });
+    document.addEventListener("touchend", onEnd, { passive: true });
+    return () => {
+      document.removeEventListener("touchstart", onStart);
+      document.removeEventListener("touchend", onEnd);
+    };
+  }, [open]);
+
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
     touchStartY.current = e.touches[0].clientY;
