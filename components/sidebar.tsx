@@ -333,36 +333,6 @@ export function MobileSidebar() {
     };
   }, [open]);
 
-  useEffect(() => {
-    if (open) return;
-    let startX: number | null = null;
-    let startY: number | null = null;
-    let startFromBottom = false;
-
-    const onStart = (e: TouchEvent) => {
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-      startFromBottom = startY > window.innerHeight - 100;
-    };
-
-    const onEnd = (e: TouchEvent) => {
-      if (startY === null || startX === null || !startFromBottom) return;
-      const dy = startY - e.changedTouches[0].clientY;
-      const dx = Math.abs(e.changedTouches[0].clientX - startX);
-      if (dy > 50 && dx < 60) setOpen(true);
-      startX = null;
-      startY = null;
-      startFromBottom = false;
-    };
-
-    document.addEventListener("touchstart", onStart, { passive: true });
-    document.addEventListener("touchend", onEnd, { passive: true });
-    return () => {
-      document.removeEventListener("touchstart", onStart);
-      document.removeEventListener("touchend", onEnd);
-    };
-  }, [open]);
-
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
     touchStartY.current = e.touches[0].clientY;
@@ -381,23 +351,23 @@ export function MobileSidebar() {
 
   return (
     <>
-      {!open && (
-        <div className="swipe-indicator md:hidden fixed bottom-1.5 left-1/2 -translate-x-1/2 z-40 w-10 h-1 bg-gray-400/50 rounded-full" />
-      )}
-      <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2">
-        <button
-          onClick={handleCreate}
-          className="mobile-fab w-11 h-11 bg-black text-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-800"
-          aria-label="New page"
-        >
-          <FilePlus className="w-4 h-4" />
-        </button>
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex items-stretch h-14 bg-white border-t border-gray-200 mobile-bottom-bar">
         <button
           onClick={() => setOpen(true)}
-          className="mobile-fab w-11 h-11 bg-white border border-gray-200 rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50"
+          className="mobile-fab flex-1 flex flex-col items-center justify-center gap-0.5 text-gray-500 hover:bg-gray-50 active:bg-gray-100 transition-colors"
           aria-label="Open menu"
         >
-          <Menu className="w-4 h-4 text-gray-700" />
+          <Menu className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Menu</span>
+        </button>
+        <div className="w-px bg-gray-200 self-stretch my-2" />
+        <button
+          onClick={handleCreate}
+          className="mobile-fab flex-1 flex flex-col items-center justify-center gap-0.5 text-gray-500 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+          aria-label="New page"
+        >
+          <FilePlus className="w-5 h-5" />
+          <span className="text-[10px] font-medium">New Page</span>
         </button>
       </div>
 

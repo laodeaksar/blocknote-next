@@ -11,7 +11,7 @@ export default async function DashboardPage() {
     <div className="flex h-screen bg-white">
       <Sidebar />
       <MobileSidebar />
-      <main className="flex-1 flex items-center justify-center">
+      <main className="flex-1 flex items-center justify-center pb-14 md:pb-0">
         <div className="text-center space-y-4">
           <div className="flex justify-center">
             <FileText className="w-16 h-16 text-gray-200" />
