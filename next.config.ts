@@ -9,9 +9,8 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: "/:path*",
+        source: "/((?!api/).*)",
         headers: [
-          { key: "Access-Control-Allow-Origin", value: "*" },
           { key: "X-Frame-Options", value: "ALLOWALL" },
         ],
       },
