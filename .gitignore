@@ -31,8 +31,6 @@ pnpm-debug.log*
 # clerk configuration (can include secrets)
 /.clerk/
 
-# convex generated
-convex/_generated/
 
 # typescript
 *.tsbuildinfo
