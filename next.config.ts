@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   turbopack: {},
   experimental: {
     serverActions: { bodySizeLimit: "2mb" },
+    turbopackFileSystemCacheForDev: true,
   },
   async headers() {
     return [
