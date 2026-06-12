@@ -31,8 +31,21 @@ args = "pnpm dev"
 waitForPort = 5000
 
 [[ports]]
+localPort = 3210
+externalPort = 3001
+
+[[ports]]
+localPort = 3211
+externalPort = 3002
+
+[[ports]]
 localPort = 5000
 externalPort = 80
+
+[[ports]]
+localPort = 6790
+externalPort = 3003
+exposeLocalhost = true
 
 [deployment]
 deploymentTarget = "autoscale"
