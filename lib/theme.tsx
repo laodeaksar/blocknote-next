@@ -35,6 +35,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         theme === "system" ? (mq.matches ? "dark" : "light") : theme;
       setResolvedTheme(resolved);
       document.documentElement.setAttribute("data-theme", resolved);
+      if (resolved === "dark") {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
     };
     apply();
     mq.addEventListener("change", apply);
