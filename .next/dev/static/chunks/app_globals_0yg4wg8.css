@@ -4089,6 +4089,10 @@
     background-color: var(--color-sidebar);
   }
 
+  .bg-sidebar-hover {
+    background-color: var(--color-sidebar-hover);
+  }
+
   .bg-slate-50 {
     background-color: var(--color-slate-50);
   }
@@ -5275,6 +5279,16 @@
   @supports (color: color-mix(in lab, red, red)) {
     .text-foreground\/50 {
       color: color-mix(in oklab, var(--color-foreground) 50%, transparent);
+    }
+  }
+
+  .text-foreground\/70 {
+    color: #171717b3;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .text-foreground\/70 {
+      color: color-mix(in oklab, var(--color-foreground) 70%, transparent);
     }
   }
 
@@ -6778,6 +6792,12 @@
   }
 
   @media (hover: hover) {
+    .hover\:bg-sidebar-hover:hover {
+      background-color: var(--color-sidebar-hover);
+    }
+  }
+
+  @media (hover: hover) {
     .hover\:bg-transparent:hover {
       background-color: #0000;
     }
@@ -6810,6 +6830,12 @@
   @media (hover: hover) {
     .hover\:text-accent-foreground:hover {
       color: var(--color-accent-foreground);
+    }
+  }
+
+  @media (hover: hover) {
+    .hover\:text-destructive:hover {
+      color: var(--color-destructive);
     }
   }
 

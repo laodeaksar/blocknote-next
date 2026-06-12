@@ -22,6 +22,11 @@ import { toast } from "sonner";
 import { useState, useRef, useEffect } from "react";
 import { UserMenu } from "@/components/user-menu";
 import { useTheme } from "@/lib/theme";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type PageData = {
   _id: Id<"pages">;
@@ -90,26 +95,26 @@ function PageItem({
       onClick={!isEditing ? onNavigate : undefined}
       className={`group relative w-full flex items-center justify-between px-2 py-1.5 rounded-md text-sm transition-colors cursor-pointer ${
         isActive
-          ? "bg-gray-200 text-gray-900"
-          : "text-gray-600 hover:bg-gray-200"
+          ? "bg-sidebar-hover text-foreground"
+          : "text-muted-foreground hover:bg-sidebar-hover hover:text-foreground"
       }`}
     >
       <span className="flex items-center gap-2 min-w-0 flex-1">
         {page.icon ? (
           <span className="text-sm shrink-0">{page.icon}</span>
         ) : (
-          <FileText className="w-4 h-4 shrink-0 text-gray-400" />
+          <FileText className="w-4 h-4 shrink-0 text-muted-foreground" />
         )}
 
         {isEditing ? (
-          <input
+          <Input
             ref={inputRef}
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
             onBlur={commitEdit}
             onKeyDown={handleKeyDown}
             onClick={(e) => e.stopPropagation()}
-            className="flex-1 min-w-0 bg-white border border-blue-400 rounded px-1 py-0 text-sm text-gray-900 outline-none ring-1 ring-blue-300"
+            className="h-6 flex-1 min-w-0 py-0 px-1 text-sm"
           />
         ) : (
           <span
@@ -123,14 +128,15 @@ function PageItem({
       </span>
 
       {!isEditing && (
-        <span
+        <Button
+          variant="ghost"
+          size="icon-xs"
           onClick={onArchive}
-          className="opacity-0 group-hover:opacity-100 shrink-0 p-1 hover:bg-gray-300 rounded transition-all"
-          role="button"
+          className="opacity-0 group-hover:opacity-100 shrink-0 h-5 w-5"
           title="Move to trash"
         >
-          <Trash2 className="w-3 h-3 text-gray-500" />
-        </span>
+          <Trash2 className="w-3 h-3" />
+        </Button>
       )}
     </div>
   );
@@ -185,68 +191,82 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
     <>
       <div className="flex items-center justify-between px-3 py-2 mt-1">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 bg-black rounded-md flex items-center justify-center">
-            <span className="text-white text-xs font-bold">N</span>
+          <div className="w-6 h-6 bg-foreground rounded-md flex items-center justify-center shrink-0">
+            <span className="text-background text-xs font-bold">N</span>
           </div>
-          <span className="text-sm font-medium text-gray-800">Workspace</span>
+          <span className="text-sm font-medium text-foreground">Workspace</span>
         </div>
         <UserMenu />
       </div>
 
       <div className="px-2 space-y-0.5">
-        <button className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-gray-600 hover:bg-gray-200 rounded-md transition-colors">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full justify-start gap-2 text-muted-foreground"
+        >
           <Search className="w-4 h-4" />
           Search
-        </button>
-        <button className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-gray-600 hover:bg-gray-200 rounded-md transition-colors">
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full justify-start gap-2 text-muted-foreground"
+        >
           <Settings className="w-4 h-4" />
           Settings
-        </button>
+        </Button>
       </div>
 
-      <div className="flex-1 overflow-y-auto mt-4 px-2">
+      <div className="flex-1 overflow-hidden mt-4 px-2">
         <div className="flex items-center justify-between px-2 mb-1">
-          <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
             Pages
           </span>
-          <button
+          <Button
+            variant="ghost"
+            size="icon-xs"
             onClick={handleCreate}
-            className="p-0.5 hover:bg-gray-200 rounded transition-colors"
             title="New page"
+            className="h-5 w-5"
           >
-            <Plus className="w-4 h-4 text-gray-500" />
-          </button>
+            <Plus className="w-4 h-4" />
+          </Button>
         </div>
 
-        {pages === undefined && (
-          <div className="space-y-1 px-2">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-7 bg-gray-200 rounded animate-pulse" />
-            ))}
-          </div>
-        )}
+        <ScrollArea className="h-full">
+          {pages === undefined && (
+            <div className="space-y-1 px-2">
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} className="h-7 w-full" />
+              ))}
+            </div>
+          )}
 
-        {pages?.length === 0 && (
-          <p className="text-xs text-gray-400 px-2 py-2">
-            No pages yet. Create one!
-          </p>
-        )}
+          {pages?.length === 0 && (
+            <p className="text-xs text-muted-foreground px-2 py-2">
+              No pages yet. Create one!
+            </p>
+          )}
 
-        {pages?.map((page: PageData) => (
-          <PageItem
-            key={page._id}
-            page={page}
-            isActive={currentId === page._id}
-            onNavigate={() => navigate(`/doc/${page._id}`)}
-            onArchive={(e) => handleArchive(e, page._id)}
-          />
-        ))}
+          {pages?.map((page: PageData) => (
+            <PageItem
+              key={page._id}
+              page={page}
+              isActive={currentId === page._id}
+              onNavigate={() => navigate(`/doc/${page._id}`)}
+              onArchive={(e) => handleArchive(e, page._id)}
+            />
+          ))}
+        </ScrollArea>
       </div>
 
-      <div className="px-2 pb-2 border-t border-gray-200 mt-2 pt-2">
+      <div className="px-2 pb-2 mt-2">
+        <Separator className="mb-2" />
+
         <button
           onClick={() => setShowTrash((v) => !v)}
-          className="w-full flex items-center justify-between px-2 py-1.5 text-sm text-gray-500 hover:bg-gray-200 rounded-md transition-colors"
+          className="w-full flex items-center justify-between px-2 py-1.5 text-sm text-muted-foreground hover:bg-sidebar-hover hover:text-foreground rounded-md transition-colors"
         >
           <span className="flex items-center gap-2">
             <Trash2 className="w-4 h-4" />
@@ -260,45 +280,53 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         {showTrash && (
           <div className="mt-1 space-y-0.5">
             {archivedPages?.length === 0 && (
-              <p className="text-xs text-gray-400 px-2 py-1">Trash is empty</p>
+              <p className="text-xs text-muted-foreground px-2 py-1">
+                Trash is empty
+              </p>
             )}
             {archivedPages?.map((page: PageData) => (
               <div
                 key={page._id}
-                className="flex items-center justify-between px-2 py-1.5 rounded-md text-sm text-gray-500 hover:bg-gray-200 transition-colors"
+                className="flex items-center justify-between px-2 py-1.5 rounded-md text-sm text-muted-foreground hover:bg-sidebar-hover transition-colors"
               >
                 <span className="flex items-center gap-2 min-w-0">
-                  <FileText className="w-4 h-4 shrink-0 text-gray-400" />
+                  <FileText className="w-4 h-4 shrink-0" />
                   <span className="truncate">{page.title || "Untitled"}</span>
                 </span>
                 <div className="flex items-center gap-1 shrink-0">
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="icon-xs"
                     onClick={(e) => handleRestore(e, page._id)}
-                    className="p-1 hover:bg-gray-300 rounded"
                     title="Restore"
+                    className="h-6 w-6"
                   >
                     <RotateCcw className="w-3 h-3" />
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon-xs"
                     onClick={(e) => handleRemove(e, page._id)}
-                    className="p-1 hover:bg-red-100 hover:text-red-500 rounded"
                     title="Delete permanently"
+                    className="h-6 w-6 hover:text-destructive hover:bg-destructive/10"
                   >
                     <Trash2 className="w-3 h-3" />
-                  </button>
+                  </Button>
                 </div>
               </div>
             ))}
           </div>
         )}
 
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={handleCreate}
-          className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-gray-500 hover:bg-gray-200 rounded-md transition-colors mt-1"
+          className="w-full justify-start gap-2 text-muted-foreground mt-1"
         >
           <Plus className="w-4 h-4" />
           New page
-        </button>
+        </Button>
       </div>
     </>
   );
@@ -306,7 +334,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
 export function Sidebar() {
   return (
-    <aside className="hidden md:flex flex-col w-60 h-full bg-[#f7f7f5] border-r border-gray-200 shrink-0">
+    <aside className="hidden md:flex flex-col w-60 h-full bg-sidebar border-r border-border shrink-0">
       <SidebarContent />
     </aside>
   );
@@ -337,7 +365,8 @@ export function MobileSidebar() {
       if (
         popoverRef.current?.contains(target) ||
         barRef.current?.contains(target)
-      ) return;
+      )
+        return;
       setOpen(false);
     };
     document.addEventListener("mousedown", handler);
@@ -353,88 +382,108 @@ export function MobileSidebar() {
       {open && (
         <div
           ref={popoverRef}
-          className="md:hidden fixed bottom-20 left-1/2 -translate-x-1/2 z-50 w-72 rounded-2xl shadow-2xl border border-gray-200 overflow-hidden bg-white mobile-popover"
+          className="md:hidden fixed bottom-20 left-1/2 -translate-x-1/2 z-50 w-72 rounded-2xl shadow-2xl border border-border overflow-hidden bg-background mobile-popover"
           style={{ animation: "popover-in 0.15s ease" }}
         >
-          <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-100">
+          <div className="flex items-center justify-between px-4 py-2.5 border-b border-border">
             <div className="flex items-center gap-2">
-              <div className="w-5 h-5 bg-black rounded flex items-center justify-center shrink-0">
-                <span className="text-white text-[10px] font-bold">N</span>
+              <div className="w-5 h-5 bg-foreground rounded flex items-center justify-center shrink-0">
+                <span className="text-background text-[10px] font-bold">N</span>
               </div>
-              <span className="text-sm font-semibold text-gray-800">Workspace</span>
+              <span className="text-sm font-semibold text-foreground">
+                Workspace
+              </span>
             </div>
-            <button
-              onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-              className="p-1.5 rounded-md hover:bg-gray-100 transition-colors"
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={() =>
+                setTheme(resolvedTheme === "dark" ? "light" : "dark")
+              }
             >
-              {resolvedTheme === "dark"
-                ? <Sun className="w-4 h-4 text-gray-500" />
-                : <Moon className="w-4 h-4 text-gray-500" />}
-            </button>
+              {resolvedTheme === "dark" ? (
+                <Sun className="w-4 h-4" />
+              ) : (
+                <Moon className="w-4 h-4" />
+              )}
+            </Button>
           </div>
 
-          <div className="max-h-56 overflow-y-auto py-1">
-            {pages === undefined && (
-              <div className="space-y-1.5 px-3 py-2">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="h-7 bg-gray-100 rounded-md animate-pulse" />
-                ))}
-              </div>
-            )}
-            {pages?.length === 0 && (
-              <p className="text-xs text-gray-400 px-4 py-3">No pages yet.</p>
-            )}
-            {pages?.map((page: PageData) => (
-              <button
-                key={page._id}
-                onClick={() => { router.push(`/doc/${page._id}`); setOpen(false); }}
-                className={`w-full flex items-center gap-2.5 px-4 py-2 text-sm text-left transition-colors ${
-                  currentId === page._id
-                    ? "bg-gray-100 text-gray-900"
-                    : "text-gray-700 hover:bg-gray-50"
-                }`}
-              >
-                {page.icon
-                  ? <span className="text-sm shrink-0">{page.icon}</span>
-                  : <FileText className="w-4 h-4 text-gray-400 shrink-0" />}
-                <span className="truncate">{page.title || "Untitled"}</span>
-              </button>
-            ))}
-          </div>
+          <ScrollArea className="max-h-56">
+            <div className="py-1">
+              {pages === undefined && (
+                <div className="space-y-1.5 px-3 py-2">
+                  {[1, 2, 3].map((i) => (
+                    <Skeleton key={i} className="h-7 w-full" />
+                  ))}
+                </div>
+              )}
+              {pages?.length === 0 && (
+                <p className="text-xs text-muted-foreground px-4 py-3">
+                  No pages yet.
+                </p>
+              )}
+              {pages?.map((page: PageData) => (
+                <button
+                  key={page._id}
+                  onClick={() => {
+                    router.push(`/doc/${page._id}`);
+                    setOpen(false);
+                  }}
+                  className={`w-full flex items-center gap-2.5 px-4 py-2 text-sm text-left transition-colors ${
+                    currentId === page._id
+                      ? "bg-muted text-foreground"
+                      : "text-foreground/70 hover:bg-muted/50"
+                  }`}
+                >
+                  {page.icon ? (
+                    <span className="text-sm shrink-0">{page.icon}</span>
+                  ) : (
+                    <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
+                  )}
+                  <span className="truncate">{page.title || "Untitled"}</span>
+                </button>
+              ))}
+            </div>
+          </ScrollArea>
 
-          <div className="border-t border-gray-100 p-1.5">
-            <button
+          <div className="border-t border-border p-1.5">
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={handleCreate}
-              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"
+              className="w-full justify-start gap-2"
             >
               <Plus className="w-4 h-4" />
               New Page
-            </button>
+            </Button>
           </div>
         </div>
       )}
 
       <div
         ref={barRef}
-        className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center h-12 bg-white border border-gray-200 rounded-full shadow-lg px-1 mobile-pill-bar"
+        className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center h-12 bg-background border border-border rounded-full shadow-lg px-1 mobile-pill-bar"
       >
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => setOpen((v) => !v)}
-          className={`mobile-fab w-10 h-10 flex items-center justify-center rounded-full transition-colors ${
-            open ? "bg-gray-100 text-gray-900" : "text-gray-600 hover:bg-gray-50"
-          }`}
+          className={`rounded-full ${open ? "bg-muted" : ""}`}
           aria-label="Toggle menu"
         >
           {open ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-        </button>
-        <div className="w-px h-5 bg-gray-200 mx-0.5" />
-        <button
+        </Button>
+        <Separator orientation="vertical" className="h-5 mx-0.5" />
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={handleCreate}
-          className="mobile-fab w-10 h-10 flex items-center justify-center rounded-full text-gray-600 hover:bg-gray-50 transition-colors"
+          className="rounded-full"
           aria-label="New page"
         >
           <FilePlus className="w-4 h-4" />
-        </button>
+        </Button>
       </div>
     </>
   );

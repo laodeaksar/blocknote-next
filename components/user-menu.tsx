@@ -1,25 +1,20 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
-import { LogOut, User } from "lucide-react";
+import { LogOut } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export function UserMenu() {
   const router = useRouter();
   const { data: session } = authClient.useSession();
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
 
   const handleSignOut = async () => {
     await authClient.signOut();
@@ -36,44 +31,49 @@ export function UserMenu() {
     : session?.user?.email?.[0]?.toUpperCase() ?? "?";
 
   return (
-    <div className="relative" ref={ref}>
-      <button
-        onClick={() => setOpen((v) => !v)}
-        className="w-7 h-7 rounded-full bg-gray-800 text-white text-xs font-medium flex items-center justify-center hover:bg-gray-700 transition-colors"
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring"
         title={session?.user?.email ?? "Account"}
       >
-        {initials}
-      </button>
+        <Avatar size="sm" className="bg-foreground">
+          <AvatarFallback className="bg-foreground text-background text-xs font-semibold">
+            {initials}
+          </AvatarFallback>
+        </Avatar>
+      </DropdownMenuTrigger>
 
-      {open && (
-        <div className="absolute right-0 mt-1 w-56 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
-          <div className="px-3 py-2 border-b border-gray-100">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-gray-800 text-white text-xs font-medium flex items-center justify-center shrink-0">
+      <DropdownMenuContent side="bottom" align="end" sideOffset={6} className="w-56">
+        <div className="px-2 py-1.5">
+          <div className="flex items-center gap-2">
+            <Avatar size="sm" className="shrink-0">
+              <AvatarFallback className="bg-foreground text-background text-xs font-semibold">
                 {initials}
-              </div>
-              <div className="min-w-0">
-                {session?.user?.name && (
-                  <p className="text-sm font-medium text-gray-900 truncate">
-                    {session.user.name}
-                  </p>
-                )}
-                <p className="text-xs text-gray-500 truncate">
-                  {session?.user?.email}
+              </AvatarFallback>
+            </Avatar>
+            <div className="min-w-0">
+              {session?.user?.name && (
+                <p className="text-sm font-medium text-foreground truncate">
+                  {session.user.name}
                 </p>
-              </div>
+              )}
+              <p className="text-xs text-muted-foreground truncate">
+                {session?.user?.email}
+              </p>
             </div>
           </div>
-
-          <button
-            onClick={handleSignOut}
-            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            <LogOut className="w-4 h-4 text-gray-400" />
-            Sign out
-          </button>
         </div>
-      )}
-    </div>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem
+          className="text-destructive hover:bg-destructive/10 focus:bg-destructive/10"
+          onClick={handleSignOut}
+        >
+          <LogOut className="w-4 h-4" />
+          Sign out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
