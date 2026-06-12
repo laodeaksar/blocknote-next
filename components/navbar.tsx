@@ -1,20 +1,13 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import { MoreHorizontal, Star, Share2, Sun, Moon } from "lucide-react";
+import { MoreHorizontal, Star, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { UserMenu } from "@/components/user-menu";
-import { useTheme } from "@/lib/theme";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { PublishPopover } from "@/components/publish-popover";
 
 interface NavbarProps {
   pageId: Id<"pages">;
@@ -23,96 +16,81 @@ interface NavbarProps {
 export function Navbar({ pageId }: NavbarProps) {
   const page = useQuery(api.pages.get, { id: pageId });
   const updatePage = useMutation(api.pages.update);
-  const { resolvedTheme, setTheme } = useTheme();
+  const [showPublish, setShowPublish] = useState(false);
+  const popoverRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const toggleTheme = () =>
-    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (
+        popoverRef.current &&
+        !popoverRef.current.contains(e.target as Node) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(e.target as Node)
+      ) {
+        setShowPublish(false);
+      }
+    }
+    if (showPublish) document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [showPublish]);
 
   if (!page) {
     return (
-      <nav className="h-12 flex items-center px-4 border-b border-border bg-background">
-        <Skeleton className="h-4 w-32" />
+      <nav className="h-12 flex items-center px-4 border-b border-gray-100 bg-white">
+        <div className="h-4 w-32 bg-gray-100 rounded animate-pulse" />
       </nav>
     );
   }
 
-  const handlePublish = async () => {
-    await updatePage({ id: pageId, isPublished: !page.isPublished });
-    toast.success(page.isPublished ? "Page unpublished" : "Page published!");
-  };
-
   return (
-    <TooltipProvider delay={400}>
-      <nav className="h-12 flex items-center justify-between px-4 border-b border-border bg-background">
-        <div className="flex items-center gap-2 min-w-0">
-          {page.icon && <span className="text-sm">{page.icon}</span>}
-          <span className="text-sm font-medium text-foreground truncate">
-            {page.title || "Untitled"}
-          </span>
-        </div>
+    <nav className="h-12 flex items-center justify-between px-4 border-b border-gray-100 bg-white relative">
+      <div className="flex items-center gap-2 min-w-0">
+        {page.icon && <span className="text-sm">{page.icon}</span>}
+        <span className="text-sm font-medium text-gray-700 truncate">
+          {page.title || "Untitled"}
+        </span>
+      </div>
 
-        <div className="flex items-center gap-1 shrink-0">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handlePublish}
-            className="gap-1.5 text-xs h-7"
+      <div className="flex items-center gap-1 shrink-0">
+        <div className="relative">
+          <button
+            ref={buttonRef}
+            onClick={() => setShowPublish((v) => !v)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border transition-colors ${
+              page.isPublished
+                ? "border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                : "border-gray-200 hover:bg-gray-50 text-gray-700"
+            }`}
           >
             <Share2 className="w-3 h-3" />
-            {page.isPublished ? "Unpublish" : "Share"}
-          </Button>
+            {page.isPublished ? "Published" : "Share"}
+          </button>
 
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <Button variant="ghost" size="icon-sm" aria-label="Favourite" />
-              }
+          {showPublish && (
+            <div
+              ref={popoverRef}
+              className="absolute right-0 top-full mt-2 z-50 bg-white rounded-xl border border-gray-200 shadow-xl"
             >
-              <Star className="w-4 h-4" />
-            </TooltipTrigger>
-            <TooltipContent>Favourite</TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  onClick={toggleTheme}
-                  aria-label="Toggle dark mode"
-                />
-              }
-            >
-              {resolvedTheme === "dark" ? (
-                <Sun className="w-4 h-4" />
-              ) : (
-                <Moon className="w-4 h-4" />
-              )}
-            </TooltipTrigger>
-            <TooltipContent>
-              {resolvedTheme === "dark" ? "Light mode" : "Dark mode"}
-            </TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label="More options"
-                />
-              }
-            >
-              <MoreHorizontal className="w-4 h-4" />
-            </TooltipTrigger>
-            <TooltipContent>More options</TooltipContent>
-          </Tooltip>
-
-          <UserMenu />
+              <PublishPopover
+                pageId={pageId}
+                isPublished={page.isPublished ?? false}
+                onClose={() => setShowPublish(false)}
+              />
+            </div>
+          )}
         </div>
-      </nav>
-    </TooltipProvider>
+
+        <button className="p-1.5 rounded-md hover:bg-gray-100 transition-colors">
+          <Star className="w-4 h-4 text-gray-500" />
+        </button>
+
+        <button className="p-1.5 rounded-md hover:bg-gray-100 transition-colors">
+          <MoreHorizontal className="w-4 h-4 text-gray-500" />
+        </button>
+
+        <UserMenu />
+      </div>
+    </nav>
   );
 }
