@@ -21,6 +21,7 @@ import {
 import { toast } from "sonner";
 import { useState, useRef, useEffect } from "react";
 import { UserMenu } from "@/components/user-menu";
+import { SearchModal } from "@/components/search-modal";
 import { useTheme } from "@/lib/theme";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -155,6 +156,18 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const removePage = useMutation(api.pages.remove);
 
   const [showTrash, setShowTrash] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOpen((v) => !v);
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, []);
 
   const handleCreate = async () => {
     const id = await createPage({ title: "Untitled" });
@@ -204,9 +217,13 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           variant="ghost"
           size="sm"
           className="w-full justify-start gap-2 text-muted-foreground"
+          onClick={() => setSearchOpen(true)}
         >
           <Search className="w-4 h-4" />
-          Search
+          <span className="flex-1 text-left">Search</span>
+          <kbd className="hidden sm:inline-flex items-center gap-0.5 text-[10px] font-mono text-muted-foreground/60">
+            <span>⌘</span><span>K</span>
+          </kbd>
         </Button>
         <Button
           variant="ghost"
@@ -328,6 +345,8 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           New page
         </Button>
       </div>
+
+      <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   );
 }

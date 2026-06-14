@@ -2,6 +2,5 @@
   "/(auth)/sign-in/[[...sign-in]]/page": "app/(auth)/sign-in/[[...sign-in]]/page.js",
   "/(auth)/sign-up/[[...sign-up]]/page": "app/(auth)/sign-up/[[...sign-up]]/page.js",
   "/api/auth/[...all]/route": "app/api/auth/[...all]/route.js",
-  "/p/[id]/page": "app/p/[id]/page.js",
   "/page": "app/page.js"
 }
