@@ -430,7 +430,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         </div>
 
         <ScrollArea className="h-full">
-          {pagesPending && (
+          {(pagesPending || pages === undefined) && (
             <div className="space-y-1 px-2">
               {[1, 2, 3].map((i) => (
                 <Skeleton key={i} className="h-7 w-full" />
@@ -438,7 +438,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             </div>
           )}
 
-          {!pagesPending && pages?.length === 0 && (
+          {pages !== undefined && pages.length === 0 && (
             <p className="text-xs text-muted-foreground px-2 py-2">
               No pages yet. Create one!
             </p>
@@ -659,14 +659,14 @@ export function MobileSidebar() {
 
           <ScrollArea className="max-h-56">
             <div className="py-1">
-              {pagesPending && (
+              {(pagesPending || pages === undefined) && (
                 <div className="space-y-1.5 px-3 py-2">
                   {[1, 2, 3].map((i) => (
                     <Skeleton key={i} className="h-7 w-full" />
                   ))}
                 </div>
               )}
-              {pages?.length === 0 && (
+              {pages !== undefined && pages.length === 0 && (
                 <p className="text-xs text-muted-foreground px-4 py-3">
                   No pages yet.
                 </p>

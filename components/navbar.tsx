@@ -18,7 +18,7 @@ interface NavbarProps {
 
 export function Navbar({ pageId }: NavbarProps) {
   const convex = useConvex();
-  const { data: page, isPending } = useQuery(convexQuery(api.pages.get, { id: pageId }));
+  const { data: page, isPending, isError } = useQuery(convexQuery(api.pages.get, { id: pageId }));
   const { mutateAsync: updatePage } = useMutation({
     mutationFn: (vars: FunctionArgs<typeof api.pages.update>) =>
       convex.mutation(api.pages.update, vars),
@@ -44,7 +44,7 @@ export function Navbar({ pageId }: NavbarProps) {
     return () => document.removeEventListener("mousedown", handleClick);
   }, [showPublish]);
 
-  if (isPending) {
+  if (isPending || isError) {
     return (
       <nav className="h-12 flex items-center px-4 border-b border-gray-100 bg-white">
         <div className="h-4 w-32 bg-gray-100 rounded animate-pulse" />
