@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { useConvex } from "convex/react";
+import type { FunctionArgs } from "convex/server";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { MoreHorizontal, Star, Share2 } from "lucide-react";
@@ -19,7 +20,7 @@ export function Navbar({ pageId }: NavbarProps) {
   const convex = useConvex();
   const { data: page } = useQuery(convexQuery(api.pages.get, { id: pageId }));
   const { mutateAsync: updatePage } = useMutation({
-    mutationFn: (vars: Parameters<typeof api.pages.update>[0]) =>
+    mutationFn: (vars: FunctionArgs<typeof api.pages.update>) =>
       convex.mutation(api.pages.update, vars),
     onError: () => toast.error("Failed to update page"),
   });
