@@ -394,6 +394,7 @@ export function MobileSidebar() {
   const convex = useConvex();
 
   const { data: pages } = useQuery(convexQuery(api.pages.list, {}));
+  const { data: archivedPages } = useQuery(convexQuery(api.pages.getArchived, {}));
   const { mutateAsync: createPage } = useMutation({
     mutationFn: (vars: { title: string }) =>
       convex.mutation(api.pages.create, vars),
@@ -402,7 +403,16 @@ export function MobileSidebar() {
     mutationFn: (vars: { id: Id<"pages"> }) =>
       convex.mutation(api.pages.archive, vars),
   });
+  const { mutateAsync: restorePage } = useMutation({
+    mutationFn: (vars: { id: Id<"pages"> }) =>
+      convex.mutation(api.pages.restore, vars),
+  });
+  const { mutateAsync: removePage } = useMutation({
+    mutationFn: (vars: { id: Id<"pages"> }) =>
+      convex.mutation(api.pages.remove, vars),
+  });
   const { resolvedTheme, setTheme } = useTheme();
+  const [showTrash, setShowTrash] = useState(false);
 
   const handleCreate = async () => {
     const id = await createPage({ title: "Untitled" });
@@ -416,6 +426,18 @@ export function MobileSidebar() {
     await archivePage({ id });
     toast.success("Page moved to trash");
     if (currentId === id) router.push("/dashboard");
+  };
+
+  const handleRestore = async (e: React.MouseEvent, id: Id<"pages">) => {
+    e.stopPropagation();
+    await restorePage({ id });
+    toast.success("Page restored");
+  };
+
+  const handleRemove = async (e: React.MouseEvent, id: Id<"pages">) => {
+    e.stopPropagation();
+    await removePage({ id });
+    toast.success("Page permanently deleted");
   };
 
   useEffect(() => {
@@ -520,7 +542,7 @@ export function MobileSidebar() {
             </div>
           </ScrollArea>
 
-          <div className="border-t border-border p-1.5">
+          <div className="border-t border-border p-1.5 space-y-0.5">
             <Button
               variant="ghost"
               size="sm"
@@ -530,6 +552,63 @@ export function MobileSidebar() {
               <Plus className="w-4 h-4" />
               New Page
             </Button>
+
+            <button
+              onClick={() => setShowTrash((v) => !v)}
+              className="w-full flex items-center justify-between px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted/50 rounded-md transition-colors"
+            >
+              <span className="flex items-center gap-2">
+                <Trash2 className="w-4 h-4" />
+                Trash
+                {(archivedPages?.length ?? 0) > 0 && (
+                  <span className="text-[10px] bg-muted rounded-full px-1.5 py-0.5 font-medium">
+                    {archivedPages!.length}
+                  </span>
+                )}
+              </span>
+              <ChevronDown
+                className={`w-3.5 h-3.5 transition-transform ${showTrash ? "rotate-180" : ""}`}
+              />
+            </button>
+
+            {showTrash && (
+              <div className="space-y-0.5 pb-1">
+                {archivedPages?.length === 0 && (
+                  <p className="text-xs text-muted-foreground px-3 py-1.5">
+                    Trash is empty
+                  </p>
+                )}
+                {archivedPages?.map((page: PageData) => (
+                  <div
+                    key={page._id}
+                    className="flex items-center gap-1 px-2 py-1 rounded-md text-sm text-muted-foreground hover:bg-muted/50 transition-colors"
+                  >
+                    <span className="flex items-center gap-2 flex-1 min-w-0 px-1">
+                      <FileText className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate text-xs">{page.title || "Untitled"}</span>
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="icon-xs"
+                      onClick={(e) => handleRestore(e, page._id)}
+                      title="Restore"
+                      className="shrink-0 h-7 w-7"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon-xs"
+                      onClick={(e) => handleRemove(e, page._id)}
+                      title="Delete permanently"
+                      className="shrink-0 h-7 w-7 hover:text-destructive hover:bg-destructive/10"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
