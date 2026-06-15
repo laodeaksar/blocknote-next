@@ -158,6 +158,106 @@ function PageItem({
   );
 }
 
+function MobilePageItem({
+  page,
+  isActive,
+  onNavigate,
+  onArchive,
+}: {
+  page: PageData;
+  isActive: boolean;
+  onNavigate: () => void;
+  onArchive: (e: React.MouseEvent) => void;
+}) {
+  const convex = useConvex();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(page.title || "");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const { mutateAsync: updatePage } = useMutation({
+    mutationFn: (vars: { id: Id<"pages">; title: string }) =>
+      convex.mutation(api.pages.update, vars),
+  });
+
+  const startEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditValue(page.title || "");
+    setIsEditing(true);
+    setTimeout(() => {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }, 0);
+  };
+
+  const commitEdit = async () => {
+    const trimmed = editValue.trim();
+    if (trimmed && trimmed !== page.title) {
+      await updatePage({ id: page._id, title: trimmed });
+    }
+    setIsEditing(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      commitEdit();
+    } else if (e.key === "Escape") {
+      setIsEditing(false);
+    }
+  };
+
+  return (
+    <div
+      className={`flex items-center gap-1 px-2 py-1 transition-colors ${
+        isActive
+          ? "bg-muted text-foreground"
+          : "text-foreground/70 hover:bg-muted/50"
+      }`}
+    >
+      {isEditing ? (
+        <div className="flex items-center gap-2 flex-1 min-w-0 px-2 py-1">
+          {page.icon ? (
+            <span className="text-sm shrink-0">{page.icon}</span>
+          ) : (
+            <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
+          )}
+          <input
+            ref={inputRef}
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            onBlur={commitEdit}
+            onKeyDown={handleKeyDown}
+            className="flex-1 min-w-0 bg-transparent text-sm outline-none border-b border-primary"
+            placeholder="Untitled"
+          />
+        </div>
+      ) : (
+        <button
+          onClick={onNavigate}
+          onDoubleClick={startEdit}
+          className="flex items-center gap-2.5 flex-1 min-w-0 px-2 py-1 text-sm text-left"
+        >
+          {page.icon ? (
+            <span className="text-sm shrink-0">{page.icon}</span>
+          ) : (
+            <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
+          )}
+          <span className="truncate">{page.title || "Untitled"}</span>
+        </button>
+      )}
+      <Button
+        variant="ghost"
+        size="icon-xs"
+        onClick={onArchive}
+        title="Move to trash"
+        className="shrink-0 h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+      >
+        <Trash2 className="w-3.5 h-3.5" />
+      </Button>
+    </div>
+  );
+}
+
 function ConfirmDeleteDialog({
   page,
   onClose,
@@ -572,38 +672,16 @@ export function MobileSidebar() {
                 </p>
               )}
               {pages?.map((page: PageData) => (
-                <div
+                <MobilePageItem
                   key={page._id}
-                  className={`flex items-center gap-1 px-2 py-1 transition-colors ${
-                    currentId === page._id
-                      ? "bg-muted text-foreground"
-                      : "text-foreground/70 hover:bg-muted/50"
-                  }`}
-                >
-                  <button
-                    onClick={() => {
-                      router.push(`/doc/${page._id}`);
-                      setOpen(false);
-                    }}
-                    className="flex items-center gap-2.5 flex-1 min-w-0 px-2 py-1 text-sm text-left"
-                  >
-                    {page.icon ? (
-                      <span className="text-sm shrink-0">{page.icon}</span>
-                    ) : (
-                      <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
-                    )}
-                    <span className="truncate">{page.title || "Untitled"}</span>
-                  </button>
-                  <Button
-                    variant="ghost"
-                    size="icon-xs"
-                    onClick={(e) => handleArchive(e, page._id)}
-                    title="Move to trash"
-                    className="shrink-0 h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </Button>
-                </div>
+                  page={page}
+                  isActive={currentId === page._id}
+                  onNavigate={() => {
+                    router.push(`/doc/${page._id}`);
+                    setOpen(false);
+                  }}
+                  onArchive={(e) => handleArchive(e, page._id)}
+                />
               ))}
             </div>
           </ScrollArea>
