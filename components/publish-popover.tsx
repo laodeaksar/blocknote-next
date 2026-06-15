@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useMutation } from "convex/react";
+import { useConvex } from "convex/react";
+import { useMutation } from "@tanstack/react-query";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { Globe, Lock, Copy, Check, ExternalLink } from "lucide-react";
@@ -18,23 +19,24 @@ export function PublishPopover({
   isPublished,
   onClose,
 }: PublishPopoverProps) {
-  const updatePage = useMutation(api.pages.update);
-  const [loading, setLoading] = useState(false);
+  const convex = useConvex();
   const [copied, setCopied] = useState(false);
+
+  const { mutate: updatePage, isPending } = useMutation({
+    mutationFn: (vars: { id: Id<"pages">; isPublished: boolean }) =>
+      convex.mutation(api.pages.update, vars),
+    onSuccess: () => {
+      toast.success(isPublished ? "Page unpublished" : "Page published to web!");
+    },
+  });
 
   const publicUrl =
     typeof window !== "undefined"
       ? `${window.location.origin}/p/${pageId}`
       : `/p/${pageId}`;
 
-  const handleToggle = async () => {
-    setLoading(true);
-    try {
-      await updatePage({ id: pageId, isPublished: !isPublished });
-      toast.success(isPublished ? "Page unpublished" : "Page published to web!");
-    } finally {
-      setLoading(false);
-    }
+  const handleToggle = () => {
+    updatePage({ id: pageId, isPublished: !isPublished });
   };
 
   const handleCopy = () => {
@@ -74,14 +76,14 @@ export function PublishPopover({
 
       <button
         onClick={handleToggle}
-        disabled={loading}
+        disabled={isPending}
         className={`w-full py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
           isPublished
             ? "bg-gray-100 hover:bg-gray-200 text-gray-700"
             : "bg-gray-900 hover:bg-gray-700 text-white"
         } disabled:opacity-50`}
       >
-        {loading
+        {isPending
           ? "Saving..."
           : isPublished
             ? "Unpublish"

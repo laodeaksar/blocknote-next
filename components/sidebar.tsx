@@ -1,6 +1,8 @@
 "use client";
 
-import { useQuery, useMutation } from "convex/react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { convexQuery } from "@convex-dev/react-query";
+import { useConvex } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useRouter, useParams } from "next/navigation";
@@ -48,7 +50,12 @@ function PageItem({
   onNavigate: () => void;
   onArchive: (e: React.MouseEvent) => void;
 }) {
-  const updatePage = useMutation(api.pages.update);
+  const convex = useConvex();
+  const { mutateAsync: updatePage } = useMutation({
+    mutationFn: (vars: { id: Id<"pages">; title: string }) =>
+      convex.mutation(api.pages.update, vars),
+  });
+
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(page.title);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -147,13 +154,31 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const router = useRouter();
   const params = useParams();
   const currentId = params?.id as string | undefined;
+  const convex = useConvex();
 
-  const pages = useQuery(api.pages.list);
-  const archivedPages = useQuery(api.pages.getArchived);
-  const createPage = useMutation(api.pages.create);
-  const archivePage = useMutation(api.pages.archive);
-  const restorePage = useMutation(api.pages.restore);
-  const removePage = useMutation(api.pages.remove);
+  const { data: pages, isPending: pagesPending } = useQuery(
+    convexQuery(api.pages.list, {})
+  );
+  const { data: archivedPages } = useQuery(
+    convexQuery(api.pages.getArchived, {})
+  );
+
+  const { mutateAsync: createPage } = useMutation({
+    mutationFn: (vars: { title: string }) =>
+      convex.mutation(api.pages.create, vars),
+  });
+  const { mutateAsync: archivePage } = useMutation({
+    mutationFn: (vars: { id: Id<"pages"> }) =>
+      convex.mutation(api.pages.archive, vars),
+  });
+  const { mutateAsync: restorePage } = useMutation({
+    mutationFn: (vars: { id: Id<"pages"> }) =>
+      convex.mutation(api.pages.restore, vars),
+  });
+  const { mutateAsync: removePage } = useMutation({
+    mutationFn: (vars: { id: Id<"pages"> }) =>
+      convex.mutation(api.pages.remove, vars),
+  });
 
   const [showTrash, setShowTrash] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -252,7 +277,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         </div>
 
         <ScrollArea className="h-full">
-          {pages === undefined && (
+          {pagesPending && (
             <div className="space-y-1 px-2">
               {[1, 2, 3].map((i) => (
                 <Skeleton key={i} className="h-7 w-full" />
@@ -260,7 +285,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             </div>
           )}
 
-          {pages?.length === 0 && (
+          {!pagesPending && pages?.length === 0 && (
             <p className="text-xs text-muted-foreground px-2 py-2">
               No pages yet. Create one!
             </p>
@@ -366,8 +391,13 @@ export function MobileSidebar() {
   const router = useRouter();
   const params = useParams();
   const currentId = params?.id as string | undefined;
-  const pages = useQuery(api.pages.list);
-  const createPage = useMutation(api.pages.create);
+  const convex = useConvex();
+
+  const { data: pages } = useQuery(convexQuery(api.pages.list, {}));
+  const { mutateAsync: createPage } = useMutation({
+    mutationFn: (vars: { title: string }) =>
+      convex.mutation(api.pages.create, vars),
+  });
   const { resolvedTheme, setTheme } = useTheme();
 
   const handleCreate = async () => {

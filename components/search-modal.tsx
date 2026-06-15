@@ -1,6 +1,7 @@
 "use client";
 
-import { useQuery } from "convex/react";
+import { useQuery } from "@tanstack/react-query";
+import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useRouter } from "next/navigation";
@@ -22,7 +23,7 @@ type Page = {
 
 export function SearchModal({ open, onClose }: SearchModalProps) {
   const router = useRouter();
-  const pages = useQuery(api.pages.list);
+  const { data: pages, isPending } = useQuery(convexQuery(api.pages.list, {}));
   const [query, setQuery] = useState("");
   const [cursor, setCursor] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -117,13 +118,13 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
           ref={listRef}
           className="max-h-72 overflow-y-auto py-1.5"
         >
-          {pages === undefined && (
+          {isPending && (
             <div className="flex items-center justify-center py-8">
               <div className="w-4 h-4 border-2 border-gray-200 border-t-gray-600 rounded-full animate-spin" />
             </div>
           )}
 
-          {pages !== undefined && filtered.length === 0 && (
+          {!isPending && filtered.length === 0 && (
             <div className="py-8 text-center text-sm text-gray-400">
               {query ? `Tidak ada hasil untuk "${query}"` : "Belum ada halaman"}
             </div>
