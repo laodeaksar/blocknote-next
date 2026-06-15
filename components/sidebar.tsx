@@ -552,7 +552,7 @@ export function MobileSidebar() {
   const currentId = params?.id as string | undefined;
   const convex = useConvex();
 
-  const { data: pages } = useQuery(convexQuery(api.pages.list, {}));
+  const { data: pages, isPending: pagesPending } = useQuery(convexQuery(api.pages.list, {}));
   const { data: archivedPages } = useQuery(convexQuery(api.pages.getArchived, {}));
   const { mutateAsync: createPage } = useMutation({
     mutationFn: (vars: { title: string }) =>
@@ -659,7 +659,7 @@ export function MobileSidebar() {
 
           <ScrollArea className="max-h-56">
             <div className="py-1">
-              {pages === undefined && (
+              {pagesPending && (
                 <div className="space-y-1.5 px-3 py-2">
                   {[1, 2, 3].map((i) => (
                     <Skeleton key={i} className="h-7 w-full" />
