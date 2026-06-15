@@ -398,6 +398,10 @@ export function MobileSidebar() {
     mutationFn: (vars: { title: string }) =>
       convex.mutation(api.pages.create, vars),
   });
+  const { mutateAsync: archivePage } = useMutation({
+    mutationFn: (vars: { id: Id<"pages"> }) =>
+      convex.mutation(api.pages.archive, vars),
+  });
   const { resolvedTheme, setTheme } = useTheme();
 
   const handleCreate = async () => {
@@ -405,6 +409,13 @@ export function MobileSidebar() {
     router.push(`/doc/${id}`);
     toast.success("New page created");
     setOpen(false);
+  };
+
+  const handleArchive = async (e: React.MouseEvent, id: Id<"pages">) => {
+    e.stopPropagation();
+    await archivePage({ id });
+    toast.success("Page moved to trash");
+    if (currentId === id) router.push("/dashboard");
   };
 
   useEffect(() => {
@@ -473,25 +484,38 @@ export function MobileSidebar() {
                 </p>
               )}
               {pages?.map((page: PageData) => (
-                <button
+                <div
                   key={page._id}
-                  onClick={() => {
-                    router.push(`/doc/${page._id}`);
-                    setOpen(false);
-                  }}
-                  className={`w-full flex items-center gap-2.5 px-4 py-2 text-sm text-left transition-colors ${
+                  className={`flex items-center gap-1 px-2 py-1 transition-colors ${
                     currentId === page._id
                       ? "bg-muted text-foreground"
                       : "text-foreground/70 hover:bg-muted/50"
                   }`}
                 >
-                  {page.icon ? (
-                    <span className="text-sm shrink-0">{page.icon}</span>
-                  ) : (
-                    <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
-                  )}
-                  <span className="truncate">{page.title || "Untitled"}</span>
-                </button>
+                  <button
+                    onClick={() => {
+                      router.push(`/doc/${page._id}`);
+                      setOpen(false);
+                    }}
+                    className="flex items-center gap-2.5 flex-1 min-w-0 px-2 py-1 text-sm text-left"
+                  >
+                    {page.icon ? (
+                      <span className="text-sm shrink-0">{page.icon}</span>
+                    ) : (
+                      <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
+                    )}
+                    <span className="truncate">{page.title || "Untitled"}</span>
+                  </button>
+                  <Button
+                    variant="ghost"
+                    size="icon-xs"
+                    onClick={(e) => handleArchive(e, page._id)}
+                    title="Move to trash"
+                    className="shrink-0 h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
               ))}
             </div>
           </ScrollArea>
