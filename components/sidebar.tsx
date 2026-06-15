@@ -30,6 +30,14 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 type PageData = {
   _id: Id<"pages">;
@@ -150,6 +158,44 @@ function PageItem({
   );
 }
 
+function ConfirmDeleteDialog({
+  page,
+  onClose,
+  onConfirm,
+  isPending,
+}: {
+  page: { id: Id<"pages">; title: string } | null;
+  onClose: () => void;
+  onConfirm: () => void;
+  isPending: boolean;
+}) {
+  return (
+    <Dialog open={!!page} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent showCloseButton={false} className="max-w-sm">
+        <DialogHeader>
+          <DialogTitle>Hapus permanen?</DialogTitle>
+          <DialogDescription>
+            <strong>&ldquo;{page?.title || "Untitled"}&rdquo;</strong> akan
+            dihapus selamanya dan tidak bisa dikembalikan.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose} disabled={isPending}>
+            Batal
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={onConfirm}
+            disabled={isPending}
+          >
+            {isPending ? "Menghapus..." : "Hapus"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const router = useRouter();
   const params = useParams();
@@ -175,13 +221,14 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
     mutationFn: (vars: { id: Id<"pages"> }) =>
       convex.mutation(api.pages.restore, vars),
   });
-  const { mutateAsync: removePage } = useMutation({
+  const { mutateAsync: removePage, isPending: isRemoving } = useMutation({
     mutationFn: (vars: { id: Id<"pages"> }) =>
       convex.mutation(api.pages.remove, vars),
   });
 
   const [showTrash, setShowTrash] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [pageToDelete, setPageToDelete] = useState<{ id: Id<"pages">; title: string } | null>(null);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -214,10 +261,16 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
     toast.success("Page restored");
   };
 
-  const handleRemove = async (e: React.MouseEvent, id: Id<"pages">) => {
+  const handleRemove = (e: React.MouseEvent, id: Id<"pages">, title: string) => {
     e.stopPropagation();
-    await removePage({ id });
+    setPageToDelete({ id, title });
+  };
+
+  const confirmRemove = async () => {
+    if (!pageToDelete) return;
+    await removePage({ id: pageToDelete.id });
     toast.success("Page permanently deleted");
+    setPageToDelete(null);
   };
 
   const navigate = (path: string) => {
@@ -348,7 +401,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                   <Button
                     variant="ghost"
                     size="icon-xs"
-                    onClick={(e) => handleRemove(e, page._id)}
+                    onClick={(e) => handleRemove(e, page._id, page.title)}
                     title="Delete permanently"
                     className="h-6 w-6 hover:text-destructive hover:bg-destructive/10"
                   >
@@ -372,6 +425,12 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       </div>
 
       <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <ConfirmDeleteDialog
+        page={pageToDelete}
+        onClose={() => setPageToDelete(null)}
+        onConfirm={confirmRemove}
+        isPending={isRemoving}
+      />
     </>
   );
 }
@@ -407,12 +466,13 @@ export function MobileSidebar() {
     mutationFn: (vars: { id: Id<"pages"> }) =>
       convex.mutation(api.pages.restore, vars),
   });
-  const { mutateAsync: removePage } = useMutation({
+  const { mutateAsync: removePage, isPending: isRemoving } = useMutation({
     mutationFn: (vars: { id: Id<"pages"> }) =>
       convex.mutation(api.pages.remove, vars),
   });
   const { resolvedTheme, setTheme } = useTheme();
   const [showTrash, setShowTrash] = useState(false);
+  const [pageToDelete, setPageToDelete] = useState<{ id: Id<"pages">; title: string } | null>(null);
 
   const handleCreate = async () => {
     const id = await createPage({ title: "Untitled" });
@@ -434,10 +494,16 @@ export function MobileSidebar() {
     toast.success("Page restored");
   };
 
-  const handleRemove = async (e: React.MouseEvent, id: Id<"pages">) => {
+  const handleRemove = (e: React.MouseEvent, id: Id<"pages">, title: string) => {
     e.stopPropagation();
-    await removePage({ id });
+    setPageToDelete({ id, title });
+  };
+
+  const confirmRemove = async () => {
+    if (!pageToDelete) return;
+    await removePage({ id: pageToDelete.id });
     toast.success("Page permanently deleted");
+    setPageToDelete(null);
   };
 
   useEffect(() => {
@@ -599,7 +665,7 @@ export function MobileSidebar() {
                     <Button
                       variant="ghost"
                       size="icon-xs"
-                      onClick={(e) => handleRemove(e, page._id)}
+                      onClick={(e) => handleRemove(e, page._id, page.title)}
                       title="Delete permanently"
                       className="shrink-0 h-7 w-7 hover:text-destructive hover:bg-destructive/10"
                     >
@@ -637,6 +703,13 @@ export function MobileSidebar() {
           <FilePlus className="w-4 h-4" />
         </Button>
       </div>
+
+      <ConfirmDeleteDialog
+        page={pageToDelete}
+        onClose={() => setPageToDelete(null)}
+        onConfirm={confirmRemove}
+        isPending={isRemoving}
+      />
     </>
   );
 }
