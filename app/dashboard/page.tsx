@@ -8,21 +8,21 @@ export default async function DashboardPage() {
   if (!cookieStore.has("better-auth.session_token")) redirect("/sign-in");
 
   return (
-    <div className="flex h-screen bg-white">
+    <div className="flex h-screen bg-background">
       <Sidebar />
       <MobileSidebar />
       <main className="flex-1 flex items-center justify-center pb-24 md:pb-0">
         <div className="text-center space-y-4">
           <div className="flex justify-center">
-            <FileText className="w-16 h-16 text-gray-200" />
+            <FileText className="w-16 h-16 text-muted" />
           </div>
-          <h2 className="text-xl font-semibold text-gray-700">
+          <h2 className="text-xl font-semibold text-foreground">
             Welcome to your workspace
           </h2>
-          <p className="text-gray-400 text-sm max-w-xs">
+          <p className="text-muted-foreground text-sm max-w-xs">
             Select a page from the sidebar or create a new one to get started.
           </p>
-          <p className="text-xs text-gray-300 flex items-center justify-center gap-1">
+          <p className="text-xs text-muted-foreground/60 flex items-center justify-center gap-1">
             <Plus className="w-3 h-3" /> Click the + icon in the sidebar to
             create a new page
           </p>

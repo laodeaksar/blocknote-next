@@ -13,7 +13,7 @@ export default async function DocPage({ params }: Props) {
   if (!cookieStore.has("better-auth.session_token")) redirect("/sign-in");
 
   return (
-    <div className="flex h-screen bg-white overflow-hidden">
+    <div className="flex h-screen bg-background overflow-hidden">
       <Sidebar />
       <MobileSidebar />
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
