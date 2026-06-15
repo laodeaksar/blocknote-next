@@ -52,6 +52,8 @@ export function Navbar({ pageId }: NavbarProps) {
     );
   }
 
+  if (!page) return null;
+
   return (
     <nav className="h-12 flex items-center justify-between px-4 border-b border-gray-100 bg-white relative">
       <div className="flex items-center gap-2 min-w-0">
