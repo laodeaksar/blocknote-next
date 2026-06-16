@@ -1,8 +1,18 @@
 "use client";
 
 import "@blocknote/shadcn/style.css";
-import { BlockNoteView } from "@blocknote/shadcn";
-import { SideMenuController, DragHandleButton, SideMenu } from "@blocknote/react";
+import { BlockNoteView, FormattingToolbar, FormattingToolbarController } from "@blocknote/shadcn";
+import {
+  SideMenuController,
+  DragHandleButton,
+  SideMenu,
+  BasicTextStyleButton,
+  TextAlignButton,
+  ColorStyleButton,
+  CreateLinkButton,
+  NestBlockButton,
+  UnnestBlockButton,
+} from "@blocknote/react";
 import { useBlockNoteSync } from "@convex-dev/prosemirror-sync/blocknote";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
@@ -111,7 +121,26 @@ export function Editor({ pageId, editable = true }: EditorProps) {
         editable={editable}
         theme={resolvedTheme}
         sideMenu={false}
+        formattingToolbar={false}
       >
+        <FormattingToolbarController
+          formattingToolbar={() => (
+            <FormattingToolbar>
+              <BasicTextStyleButton basicTextStyle="bold" key="bold" />
+              <BasicTextStyleButton basicTextStyle="italic" key="italic" />
+              <BasicTextStyleButton basicTextStyle="underline" key="underline" />
+              <BasicTextStyleButton basicTextStyle="strike" key="strike" />
+              <BasicTextStyleButton basicTextStyle="code" key="code" />
+              <TextAlignButton textAlignment="left" key="left" />
+              <TextAlignButton textAlignment="center" key="center" />
+              <TextAlignButton textAlignment="right" key="right" />
+              <ColorStyleButton key="color" />
+              <NestBlockButton key="nest" />
+              <UnnestBlockButton key="unnest" />
+              <CreateLinkButton key="link" />
+            </FormattingToolbar>
+          )}
+        />
         <SideMenuController
           sideMenu={(props) => (
             <SideMenu {...props}>
