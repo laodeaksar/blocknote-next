@@ -155,7 +155,7 @@ export function Editor({ pageId, editable = true }: EditorProps) {
       <BlockNoteView
         editor={sync.editor}
         editable={editable}
-        theme={resolvedTheme}
+        theme={resolvedTheme as "light" | "dark" | undefined}
         sideMenu={false}
         formattingToolbar={false}
       >
