@@ -17,8 +17,6 @@ import {
   Menu,
   X,
   FilePlus,
-  Sun,
-  Moon,
   GripVertical,
 } from "lucide-react";
 import {
@@ -41,7 +39,7 @@ import { toast } from "sonner";
 import { useState, useRef, useEffect } from "react";
 import { UserMenu } from "@/components/user-menu";
 import { SearchModal } from "@/components/search-modal";
-import { useTheme } from "@/lib/theme";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -500,14 +498,17 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             <span>⌘</span><span>K</span>
           </kbd>
         </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="w-full justify-start gap-2 text-muted-foreground"
-        >
-          <Settings className="w-4 h-4" />
-          Settings
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex-1 justify-start gap-2 text-muted-foreground"
+          >
+            <Settings className="w-4 h-4" />
+            Settings
+          </Button>
+          <ThemeToggle />
+        </div>
       </div>
 
       <div className="flex-1 overflow-hidden mt-4 px-2">
@@ -682,7 +683,6 @@ export function MobileSidebar() {
     mutationFn: (vars: { orderedIds: Id<"pages">[] }) =>
       convex.mutation(api.pages.reorder, vars),
   });
-  const { resolvedTheme, setTheme } = useTheme();
   const [localPages, setLocalPages] = useState<PageData[]>([]);
   const [showTrash, setShowTrash] = useState(false);
   const [pageToDelete, setPageToDelete] = useState<{ id: Id<"pages">; title: string } | null>(null);
@@ -775,19 +775,7 @@ export function MobileSidebar() {
                 Workspace
               </span>
             </div>
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              onClick={() =>
-                setTheme(resolvedTheme === "dark" ? "light" : "dark")
-              }
-            >
-              {resolvedTheme === "dark" ? (
-                <Sun className="w-4 h-4" />
-              ) : (
-                <Moon className="w-4 h-4" />
-              )}
-            </Button>
+            <ThemeToggle />
           </div>
 
           <ScrollArea className="max-h-56">
