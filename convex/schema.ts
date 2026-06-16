@@ -25,6 +25,7 @@ export default defineSchema({
     userId: v.string(),
     name: v.string(),
     avatarUrl: v.optional(v.string()),
+    theme: v.optional(v.union(v.literal("light"), v.literal("dark"), v.literal("system"))),
   }).index("by_userId", ["userId"]),
 
   threads: defineTable({
