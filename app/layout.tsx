@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { ConvexClientProvider } from "@/lib/convex";
 import { ThemeProvider } from "next-themes";
+import { ThemeShortcut } from "@/components/theme-shortcut";
 import { Toaster } from "sonner";
 import "./globals.css";
 
@@ -34,6 +35,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <ConvexClientProvider>
             {children}
+            <ThemeShortcut />
             <Toaster richColors position="bottom-right" />
           </ConvexClientProvider>
         </ThemeProvider>
