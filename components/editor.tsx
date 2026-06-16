@@ -101,6 +101,29 @@ export function Editor({ pageId, editable = true }: EditorProps) {
     }, 300);
   }, []);
 
+  const renderFormattingToolbar = useCallback(
+    () => (
+      <FormattingToolbar>
+        <BasicTextStyleButton basicTextStyle="bold" key="bold" />
+        <BasicTextStyleButton basicTextStyle="italic" key="italic" />
+        <BasicTextStyleButton basicTextStyle="underline" key="underline" />
+        <BasicTextStyleButton basicTextStyle="strike" key="strike" />
+        <BasicTextStyleButton basicTextStyle="code" key="code" />
+        <TextAlignButton textAlignment="left" key="left" />
+        <TextAlignButton textAlignment="center" key="center" />
+        <TextAlignButton textAlignment="right" key="right" />
+        <ColorStyleButton key="color" />
+        <NestBlockButton key="nest" />
+        <UnnestBlockButton key="unnest" />
+        <CreateLinkButton key="link" />
+        {editable && commentsExtension && (
+          <AddCommentButton key="comment" />
+        )}
+      </FormattingToolbar>
+    ),
+    [editable, commentsExtension]
+  );
+
   if (sync.isLoading || !sync.editor) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -160,25 +183,7 @@ export function Editor({ pageId, editable = true }: EditorProps) {
         formattingToolbar={false}
       >
         <FormattingToolbarController
-          formattingToolbar={() => (
-            <FormattingToolbar>
-              <BasicTextStyleButton basicTextStyle="bold" key="bold" />
-              <BasicTextStyleButton basicTextStyle="italic" key="italic" />
-              <BasicTextStyleButton basicTextStyle="underline" key="underline" />
-              <BasicTextStyleButton basicTextStyle="strike" key="strike" />
-              <BasicTextStyleButton basicTextStyle="code" key="code" />
-              <TextAlignButton textAlignment="left" key="left" />
-              <TextAlignButton textAlignment="center" key="center" />
-              <TextAlignButton textAlignment="right" key="right" />
-              <ColorStyleButton key="color" />
-              <NestBlockButton key="nest" />
-              <UnnestBlockButton key="unnest" />
-              <CreateLinkButton key="link" />
-              {editable && commentsExtension && (
-                <AddCommentButton key="comment" />
-              )}
-            </FormattingToolbar>
-          )}
+          formattingToolbar={renderFormattingToolbar}
         />
         <SideMenuController
           sideMenu={(props) => (
@@ -189,7 +194,11 @@ export function Editor({ pageId, editable = true }: EditorProps) {
         />
         {commentsExtension && (
           <>
-            <FloatingComposerController />
+            <FloatingComposerController
+              floatingUIOptions={{
+                useDismissProps: { outsidePressEvent: "click" },
+              }}
+            />
             <FloatingThreadController />
           </>
         )}
