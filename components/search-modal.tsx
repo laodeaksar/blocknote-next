@@ -89,26 +89,26 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
         onClick={onClose}
       />
 
-      <div className="relative w-full max-w-lg mx-4 bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
-          <Search className="w-4 h-4 text-gray-400 shrink-0" />
+      <div className="relative w-full max-w-lg mx-4 bg-popover rounded-2xl shadow-2xl border border-border overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
+          <Search className="w-4 h-4 text-muted-foreground shrink-0" />
           <input
             ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Cari halaman..."
-            className="flex-1 text-sm text-gray-900 placeholder-gray-400 outline-none bg-transparent"
+            className="flex-1 text-sm text-foreground placeholder:text-muted-foreground outline-none bg-transparent"
           />
           <div className="flex items-center gap-2">
             {query && (
               <button
                 onClick={() => setQuery("")}
-                className="p-0.5 rounded hover:bg-gray-100 transition-colors"
+                className="p-0.5 rounded hover:bg-accent transition-colors"
               >
-                <X className="w-3.5 h-3.5 text-gray-400" />
+                <X className="w-3.5 h-3.5 text-muted-foreground" />
               </button>
             )}
-            <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded border border-gray-200 text-[10px] text-gray-400 font-mono">
+            <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded border border-border text-[10px] text-muted-foreground font-mono">
               ESC
             </kbd>
           </div>
@@ -120,12 +120,12 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
         >
           {isPending && (
             <div className="flex items-center justify-center py-8">
-              <div className="w-4 h-4 border-2 border-gray-200 border-t-gray-600 rounded-full animate-spin" />
+              <div className="w-4 h-4 border-2 border-muted border-t-foreground rounded-full animate-spin" />
             </div>
           )}
 
           {!isPending && filtered.length === 0 && (
-            <div className="py-8 text-center text-sm text-gray-400">
+            <div className="py-8 text-center text-sm text-muted-foreground">
               {query ? `Tidak ada hasil untuk "${query}"` : "Belum ada halaman"}
             </div>
           )}
@@ -136,19 +136,19 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
               onClick={() => navigate(page._id)}
               onMouseEnter={() => setCursor(i)}
               className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
-                i === cursor ? "bg-gray-100" : "hover:bg-gray-50"
+                i === cursor ? "bg-accent" : "hover:bg-accent/50"
               }`}
             >
               {page.icon ? (
                 <span className="text-base shrink-0">{page.icon}</span>
               ) : (
-                <FileText className="w-4 h-4 text-gray-400 shrink-0" />
+                <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
               )}
-              <span className="text-sm text-gray-800 truncate">
+              <span className="text-sm text-foreground truncate">
                 {page.title || "Untitled"}
               </span>
               {page.isPublished && (
-                <span className="ml-auto shrink-0 text-[10px] text-emerald-600 font-medium bg-emerald-50 px-1.5 py-0.5 rounded-full">
+                <span className="ml-auto shrink-0 text-[10px] text-emerald-600 font-medium bg-emerald-50 dark:bg-emerald-950/30 dark:text-emerald-400 px-1.5 py-0.5 rounded-full">
                   publik
                 </span>
               )}
@@ -157,17 +157,17 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
         </div>
 
         {filtered.length > 0 && (
-          <div className="px-4 py-2 border-t border-gray-100 flex items-center gap-4 text-[10px] text-gray-400">
+          <div className="px-4 py-2 border-t border-border flex items-center gap-4 text-[10px] text-muted-foreground">
             <span className="flex items-center gap-1">
-              <kbd className="border border-gray-200 rounded px-1 font-mono">↑↓</kbd>
+              <kbd className="border border-border rounded px-1 font-mono">↑↓</kbd>
               navigasi
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="border border-gray-200 rounded px-1 font-mono">↵</kbd>
+              <kbd className="border border-border rounded px-1 font-mono">↵</kbd>
               buka
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="border border-gray-200 rounded px-1 font-mono">ESC</kbd>
+              <kbd className="border border-border rounded px-1 font-mono">ESC</kbd>
               tutup
             </span>
           </div>
