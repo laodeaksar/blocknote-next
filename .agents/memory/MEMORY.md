@@ -1,0 +1,2 @@
+- [Convex schema deployment](convex-schema-deployment.md) — avoid .withIndex() when schema not yet pushed to cloud; use .filter() instead
+- [BlockNote comments API](blocknote-comments-api.md) — CommentsExtension is a function, not class; FloatingComposerController+FloatingThreadController go inside BlockNoteView

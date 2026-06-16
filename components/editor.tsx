@@ -1,8 +1,10 @@
 "use client";
 
 import "@blocknote/shadcn/style.css";
-import { BlockNoteView, FormattingToolbar, FormattingToolbarController } from "@blocknote/shadcn";
+import { BlockNoteView } from "@blocknote/shadcn";
 import {
+  FormattingToolbar,
+  FormattingToolbarController,
   SideMenuController,
   DragHandleButton,
   SideMenu,
@@ -12,14 +14,21 @@ import {
   CreateLinkButton,
   NestBlockButton,
   UnnestBlockButton,
+  AddCommentButton,
+  FloatingComposerController,
+  FloatingThreadController,
 } from "@blocknote/react";
+import { CommentsExtension } from "@blocknote/core/comments";
 import { useBlockNoteSync } from "@convex-dev/prosemirror-sync/blocknote";
+import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useTheme } from "@/lib/theme";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useConvexConnectionState } from "convex/react";
 import { WifiOff, RefreshCw, AlertCircle } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
+import { useConvexThreadStore } from "@/lib/thread-store";
 
 const EMPTY_DOC = { type: "doc", content: [] };
 
@@ -32,12 +41,39 @@ export function Editor({ pageId, editable = true }: EditorProps) {
   const [syncError, setSyncError] = useState<Error | null>(null);
   const [isRetrying, setIsRetrying] = useState(false);
 
+  const { data: session } = authClient.useSession();
+  const userId = session?.user?.id ?? "";
+  const userName =
+    session?.user?.name ?? session?.user?.email ?? "User";
+  const userAvatar = session?.user?.image ?? undefined;
+
+  const upsertUser = useMutation(api.comments.upsertUser);
+
+  useEffect(() => {
+    if (!userId || !editable) return;
+    upsertUser({ name: userName, avatarUrl: userAvatar }).catch(() => {});
+  }, [userId, userName, userAvatar, editable, upsertUser]);
+
+  const { store: threadStore, resolveUsers } = useConvexThreadStore(
+    pageId,
+    editable ? userId : "",
+    userName
+  );
+
+  const commentsExtension = useMemo(() => {
+    if (!editable || !userId || !threadStore || !resolveUsers) return null;
+    return CommentsExtension({ threadStore, resolveUsers });
+  }, [editable, userId, threadStore, resolveUsers]);
+
   const handleSyncError = useCallback((error: Error) => {
     setSyncError(error);
   }, []);
 
   const sync = useBlockNoteSync(api.prosemirrorSync, pageId, {
     onSyncError: handleSyncError,
+    editorOptions: commentsExtension
+      ? { extensions: [commentsExtension] }
+      : undefined,
   });
   const { resolvedTheme } = useTheme();
   const connectionState = useConvexConnectionState();
@@ -138,6 +174,9 @@ export function Editor({ pageId, editable = true }: EditorProps) {
               <NestBlockButton key="nest" />
               <UnnestBlockButton key="unnest" />
               <CreateLinkButton key="link" />
+              {editable && commentsExtension && (
+                <AddCommentButton key="comment" />
+              )}
             </FormattingToolbar>
           )}
         />
@@ -148,6 +187,12 @@ export function Editor({ pageId, editable = true }: EditorProps) {
             </SideMenu>
           )}
         />
+        {commentsExtension && (
+          <>
+            <FloatingComposerController />
+            <FloatingThreadController />
+          </>
+        )}
       </BlockNoteView>
     </div>
   );

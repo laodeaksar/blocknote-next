@@ -20,4 +20,35 @@ export default defineSchema({
     content: v.any(),
     position: v.number(),
   }).index("by_page", ["pageId"]),
+
+  users: defineTable({
+    userId: v.string(),
+    name: v.string(),
+    avatarUrl: v.optional(v.string()),
+  }).index("by_userId", ["userId"]),
+
+  threads: defineTable({
+    pageId: v.id("pages"),
+    resolved: v.boolean(),
+    resolvedBy: v.optional(v.string()),
+    resolvedUpdatedAt: v.optional(v.number()),
+    updatedAt: v.number(),
+    metadata: v.optional(v.any()),
+  }).index("by_page", ["pageId"]),
+
+  comments: defineTable({
+    threadId: v.id("threads"),
+    userId: v.string(),
+    body: v.optional(v.any()),
+    updatedAt: v.number(),
+    deletedAt: v.optional(v.number()),
+    metadata: v.optional(v.any()),
+    reactions: v.array(
+      v.object({
+        emoji: v.string(),
+        createdAt: v.number(),
+        userId: v.string(),
+      })
+    ),
+  }).index("by_thread", ["threadId"]),
 });
