@@ -11,10 +11,14 @@ export const list = query({
       .query("pages")
       .withIndex("by_user", (q) => q.eq("userId", identity.subject))
       .filter((q) => q.eq(q.field("isArchived"), false))
-      .order("desc")
       .collect();
 
-    return pages;
+    return pages.sort((a, b) => {
+      if (a.order !== undefined && b.order !== undefined) return a.order - b.order;
+      if (a.order !== undefined) return -1;
+      if (b.order !== undefined) return 1;
+      return b._creationTime - a._creationTime;
+    });
   },
 });
 
@@ -116,6 +120,20 @@ export const remove = mutation({
     if (page.userId !== identity.subject) throw new Error("Unauthorized");
 
     await ctx.db.delete(args.id);
+  },
+});
+
+export const reorder = mutation({
+  args: { orderedIds: v.array(v.id("pages")) },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+
+    for (let i = 0; i < args.orderedIds.length; i++) {
+      const page = await ctx.db.get(args.orderedIds[i]);
+      if (!page || page.userId !== identity.subject) continue;
+      await ctx.db.patch(args.orderedIds[i], { order: i });
+    }
   },
 });
 

@@ -10,6 +10,7 @@ export default defineSchema({
     isArchived: v.boolean(),
     isPublished: v.boolean(),
     parentDocument: v.optional(v.id("pages")),
+    order: v.optional(v.number()),
   })
     .index("by_user", ["userId"])
     .index("by_user_parent", ["userId", "parentDocument"]),

@@ -19,7 +19,24 @@ import {
   FilePlus,
   Sun,
   Moon,
+  GripVertical,
 } from "lucide-react";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { toast } from "sonner";
 import { useState, useRef, useEffect } from "react";
 import { UserMenu } from "@/components/user-menu";
@@ -68,6 +85,22 @@ function PageItem({
   const [editValue, setEditValue] = useState(page.title);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: page._id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : 1,
+    zIndex: isDragging ? 50 : undefined,
+  };
+
   useEffect(() => {
     if (isEditing) {
       inputRef.current?.focus();
@@ -108,14 +141,27 @@ function PageItem({
 
   return (
     <div
+      ref={setNodeRef}
+      style={style}
       onClick={!isEditing ? onNavigate : undefined}
-      className={`group relative w-full flex items-center justify-between px-2 py-1.5 rounded-md text-sm transition-colors cursor-pointer ${
+      className={`group relative w-full flex items-center justify-between px-1 py-1.5 rounded-md text-sm transition-colors cursor-pointer ${
         isActive
           ? "bg-sidebar-hover text-foreground"
           : "text-muted-foreground hover:bg-sidebar-hover hover:text-foreground"
       }`}
     >
-      <span className="flex items-center gap-2 min-w-0 flex-1">
+      <button
+        {...attributes}
+        {...listeners}
+        onClick={(e) => e.stopPropagation()}
+        className="opacity-0 group-hover:opacity-100 shrink-0 p-0.5 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground rounded"
+        title="Drag to reorder"
+        tabIndex={-1}
+      >
+        <GripVertical className="w-3.5 h-3.5" />
+      </button>
+
+      <span className="flex items-center gap-2 min-w-0 flex-1 pl-0.5">
         {page.icon ? (
           <span className="text-sm shrink-0">{page.icon}</span>
         ) : (
@@ -147,7 +193,7 @@ function PageItem({
         <Button
           variant="ghost"
           size="icon-xs"
-          onClick={onArchive}
+          onClick={(e) => { e.stopPropagation(); onArchive(e); }}
           className="opacity-0 group-hover:opacity-100 shrink-0 h-5 w-5"
           title="Move to trash"
         >
@@ -179,6 +225,21 @@ function MobilePageItem({
       convex.mutation(api.pages.update, vars),
   });
 
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: page._id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : 1,
+  };
+
   const startEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     setEditValue(page.title || "");
@@ -208,14 +269,25 @@ function MobilePageItem({
 
   return (
     <div
-      className={`flex items-center gap-1 px-2 py-1 transition-colors ${
+      ref={setNodeRef}
+      style={style}
+      className={`flex items-center gap-1 px-1 py-1 transition-colors ${
         isActive
           ? "bg-muted text-foreground"
           : "text-foreground/70 hover:bg-muted/50"
       }`}
     >
+      <button
+        {...attributes}
+        {...listeners}
+        onClick={(e) => e.stopPropagation()}
+        className="shrink-0 p-1 cursor-grab active:cursor-grabbing text-muted-foreground/50 hover:text-muted-foreground touch-none"
+        tabIndex={-1}
+      >
+        <GripVertical className="w-3.5 h-3.5" />
+      </button>
       {isEditing ? (
-        <div className="flex items-center gap-2 flex-1 min-w-0 px-2 py-1">
+        <div className="flex items-center gap-2 flex-1 min-w-0 px-1 py-1">
           {page.icon ? (
             <span className="text-sm shrink-0">{page.icon}</span>
           ) : (
@@ -235,7 +307,7 @@ function MobilePageItem({
         <button
           onClick={onNavigate}
           onDoubleClick={startEdit}
-          className="flex items-center gap-2.5 flex-1 min-w-0 px-2 py-1 text-sm text-left"
+          className="flex items-center gap-2 flex-1 min-w-0 px-1 py-1 text-sm text-left"
         >
           {page.icon ? (
             <span className="text-sm shrink-0">{page.icon}</span>
@@ -325,10 +397,35 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
     mutationFn: (vars: { id: Id<"pages"> }) =>
       convex.mutation(api.pages.remove, vars),
   });
+  const { mutateAsync: reorderPages } = useMutation({
+    mutationFn: (vars: { orderedIds: Id<"pages">[] }) =>
+      convex.mutation(api.pages.reorder, vars),
+  });
 
+  const [localPages, setLocalPages] = useState<PageData[]>([]);
   const [showTrash, setShowTrash] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [pageToDelete, setPageToDelete] = useState<{ id: Id<"pages">; title: string } | null>(null);
+
+  useEffect(() => {
+    if (pages) setLocalPages(pages);
+  }, [pages]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } })
+  );
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = localPages.findIndex((p) => p._id === active.id);
+    const newIndex = localPages.findIndex((p) => p._id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+    const reordered = arrayMove(localPages, oldIndex, newIndex);
+    setLocalPages(reordered);
+    await reorderPages({ orderedIds: reordered.map((p) => p._id) });
+  };
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -444,15 +541,26 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             </p>
           )}
 
-          {pages?.map((page: PageData) => (
-            <PageItem
-              key={page._id}
-              page={page}
-              isActive={currentId === page._id}
-              onNavigate={() => navigate(`/doc/${page._id}`)}
-              onArchive={(e) => handleArchive(e, page._id)}
-            />
-          ))}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={localPages.map((p) => p._id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {localPages.map((page: PageData) => (
+                <PageItem
+                  key={page._id}
+                  page={page}
+                  isActive={currentId === page._id}
+                  onNavigate={() => navigate(`/doc/${page._id}`)}
+                  onArchive={(e) => handleArchive(e, page._id)}
+                />
+              ))}
+            </SortableContext>
+          </DndContext>
         </ScrollArea>
       </div>
 
@@ -570,9 +678,34 @@ export function MobileSidebar() {
     mutationFn: (vars: { id: Id<"pages"> }) =>
       convex.mutation(api.pages.remove, vars),
   });
+  const { mutateAsync: reorderPages } = useMutation({
+    mutationFn: (vars: { orderedIds: Id<"pages">[] }) =>
+      convex.mutation(api.pages.reorder, vars),
+  });
   const { resolvedTheme, setTheme } = useTheme();
+  const [localPages, setLocalPages] = useState<PageData[]>([]);
   const [showTrash, setShowTrash] = useState(false);
   const [pageToDelete, setPageToDelete] = useState<{ id: Id<"pages">; title: string } | null>(null);
+
+  useEffect(() => {
+    if (pages) setLocalPages(pages);
+  }, [pages]);
+
+  const mobileSensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } })
+  );
+
+  const handleMobileDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = localPages.findIndex((p) => p._id === active.id);
+    const newIndex = localPages.findIndex((p) => p._id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+    const reordered = arrayMove(localPages, oldIndex, newIndex);
+    setLocalPages(reordered);
+    await reorderPages({ orderedIds: reordered.map((p) => p._id) });
+  };
 
   const handleCreate = async () => {
     const id = await createPage({ title: "Untitled" });
@@ -671,18 +804,29 @@ export function MobileSidebar() {
                   No pages yet.
                 </p>
               )}
-              {pages?.map((page: PageData) => (
-                <MobilePageItem
-                  key={page._id}
-                  page={page}
-                  isActive={currentId === page._id}
-                  onNavigate={() => {
-                    router.push(`/doc/${page._id}`);
-                    setOpen(false);
-                  }}
-                  onArchive={(e) => handleArchive(e, page._id)}
-                />
-              ))}
+              <DndContext
+                sensors={mobileSensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleMobileDragEnd}
+              >
+                <SortableContext
+                  items={localPages.map((p) => p._id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {localPages.map((page: PageData) => (
+                    <MobilePageItem
+                      key={page._id}
+                      page={page}
+                      isActive={currentId === page._id}
+                      onNavigate={() => {
+                        router.push(`/doc/${page._id}`);
+                        setOpen(false);
+                      }}
+                      onArchive={(e) => handleArchive(e, page._id)}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
             </div>
           </ScrollArea>
 
