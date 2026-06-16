@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default async function HomePage() {
   const cookieStore = await cookies();
@@ -8,7 +9,10 @@ export default async function HomePage() {
   if (hasSession) redirect("/dashboard");
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
+    <main className="relative flex min-h-screen flex-col items-center justify-center bg-background px-4">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
       <div className="max-w-2xl w-full text-center space-y-8">
         <div className="space-y-4">
           <div className="flex items-center justify-center gap-3">
