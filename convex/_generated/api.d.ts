@@ -10,6 +10,7 @@
 
 import type * as auth from "../auth.js";
 import type * as blocks from "../blocks.js";
+import type * as comments from "../comments.js";
 import type * as http from "../http.js";
 import type * as pages from "../pages.js";
 import type * as prosemirrorSync from "../prosemirrorSync.js";
@@ -23,6 +24,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   blocks: typeof blocks;
+  comments: typeof comments;
   http: typeof http;
   pages: typeof pages;
   prosemirrorSync: typeof prosemirrorSync;

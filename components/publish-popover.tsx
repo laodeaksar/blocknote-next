@@ -52,8 +52,8 @@ export function PublishPopover({
         <div
           className={`mt-0.5 w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
             isPublished
-              ? "bg-emerald-100 text-emerald-600"
-              : "bg-gray-100 text-gray-500"
+              ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400"
+              : "bg-muted text-muted-foreground"
           }`}
         >
           {isPublished ? (
@@ -63,10 +63,10 @@ export function PublishPopover({
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-gray-900">
+          <p className="text-sm font-semibold text-foreground">
             {isPublished ? "Published to web" : "Private page"}
           </p>
-          <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
+          <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
             {isPublished
               ? "Anyone with the link can view this page."
               : "Only you can see this page."}
@@ -79,8 +79,8 @@ export function PublishPopover({
         disabled={isPending}
         className={`w-full py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
           isPublished
-            ? "bg-gray-100 hover:bg-gray-200 text-gray-700"
-            : "bg-gray-900 hover:bg-gray-700 text-white"
+            ? "bg-muted hover:bg-accent text-foreground"
+            : "bg-primary hover:bg-primary/90 text-primary-foreground"
         } disabled:opacity-50`}
       >
         {isPending
@@ -92,19 +92,19 @@ export function PublishPopover({
 
       {isPublished && (
         <div className="space-y-2">
-          <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg border border-gray-200">
-            <span className="text-xs text-gray-500 truncate flex-1 font-mono">
+          <div className="flex items-center gap-2 p-2 bg-muted rounded-lg border border-border">
+            <span className="text-xs text-muted-foreground truncate flex-1 font-mono">
               {publicUrl}
             </span>
             <button
               onClick={handleCopy}
-              className="shrink-0 p-1 hover:bg-gray-200 rounded transition-colors"
+              className="shrink-0 p-1 hover:bg-accent rounded transition-colors"
               title="Copy link"
             >
               {copied ? (
                 <Check className="w-3.5 h-3.5 text-emerald-500" />
               ) : (
-                <Copy className="w-3.5 h-3.5 text-gray-500" />
+                <Copy className="w-3.5 h-3.5 text-muted-foreground" />
               )}
             </button>
           </div>
@@ -113,7 +113,7 @@ export function PublishPopover({
             target="_blank"
             rel="noopener noreferrer"
             onClick={onClose}
-            className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-800 transition-colors"
+            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
             <ExternalLink className="w-3 h-3" />
             Open public page
