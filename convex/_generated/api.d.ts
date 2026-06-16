@@ -13,6 +13,7 @@ import type * as blocks from "../blocks.js";
 import type * as comments from "../comments.js";
 import type * as http from "../http.js";
 import type * as pages from "../pages.js";
+import type * as presence from "../presence.js";
 import type * as prosemirrorSync from "../prosemirrorSync.js";
 import type * as users from "../users.js";
 
@@ -28,6 +29,7 @@ declare const fullApi: ApiFromModules<{
   comments: typeof comments;
   http: typeof http;
   pages: typeof pages;
+  presence: typeof presence;
   prosemirrorSync: typeof prosemirrorSync;
   users: typeof users;
 }>;

@@ -29,6 +29,7 @@ import { useConvexConnectionState } from "convex/react";
 import { WifiOff, RefreshCw, AlertCircle } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { useConvexThreadStore } from "@/lib/thread-store";
+import { usePresence } from "@/lib/use-presence";
 
 const EMPTY_DOC = { type: "doc", content: [] };
 
@@ -92,6 +93,14 @@ export function Editor({ pageId, editable = true }: EditorProps) {
       sync.create(EMPTY_DOC);
     }
   }, [sync.isLoading, sync.editor]);
+
+  usePresence(
+    sync.editor,
+    pageId,
+    userId,
+    userName,
+    editable && !!userId
+  );
 
   const handleRetry = useCallback(() => {
     setIsRetrying(true);

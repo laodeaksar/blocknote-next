@@ -53,4 +53,17 @@ export default defineSchema({
       })
     ),
   }).index("by_thread", ["threadId"]),
+
+  presence: defineTable({
+    pageId: v.id("pages"),
+    userId: v.string(),
+    sessionId: v.string(),
+    userName: v.string(),
+    color: v.string(),
+    from: v.number(),
+    to: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_page", ["pageId"])
+    .index("by_page_session", ["pageId", "sessionId"]),
 });
