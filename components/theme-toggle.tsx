@@ -1,14 +1,34 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, Monitor } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { authClient } from "@/lib/auth-client";
 
+type Theme = "light" | "dark" | "system";
+
+const CYCLE: Theme[] = ["light", "dark", "system"];
+
+const LABELS: Record<Theme, string> = {
+  light:  "Light mode — click for dark (Ctrl+Shift+L)",
+  dark:   "Dark mode — click for system (Ctrl+Shift+L)",
+  system: "System mode — click for light (Ctrl+Shift+L)",
+};
+
+function nextTheme(current: Theme): Theme {
+  return CYCLE[(CYCLE.indexOf(current) + 1) % CYCLE.length];
+}
+
+function ThemeIcon({ theme }: { theme: Theme }) {
+  if (theme === "dark")   return <Moon    className="w-4 h-4" />;
+  if (theme === "system") return <Monitor className="w-4 h-4" />;
+  return                         <Sun     className="w-4 h-4" />;
+}
+
 export function ThemeToggle() {
-  const { resolvedTheme, setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const { data: session } = authClient.useSession();
   const saveTheme = useMutation(api.users.setMyTheme);
   const [mounted, setMounted] = useState(false);
@@ -16,21 +36,17 @@ export function ThemeToggle() {
   useEffect(() => setMounted(true), []);
 
   if (!mounted) {
-    return (
-      <div className="w-9 h-9 rounded-lg border border-border bg-background" />
-    );
+    return <div className="w-9 h-9 rounded-lg border border-border bg-background" />;
   }
 
+  const current = (theme as Theme) ?? "system";
+  const next = nextTheme(current);
+  const label = LABELS[current];
+
   const toggle = () => {
-    const next = resolvedTheme === "dark" ? "light" : "dark";
     setTheme(next);
     if (session?.user) saveTheme({ theme: next }).catch(() => {});
   };
-
-  const label =
-    resolvedTheme === "dark"
-      ? "Switch to light mode (Ctrl+Shift+L)"
-      : "Switch to dark mode (Ctrl+Shift+L)";
 
   return (
     <button
@@ -39,11 +55,7 @@ export function ThemeToggle() {
       aria-label={label}
       title={label}
     >
-      {resolvedTheme === "dark" ? (
-        <Sun className="w-4 h-4" />
-      ) : (
-        <Moon className="w-4 h-4" />
-      )}
+      <ThemeIcon theme={current} />
     </button>
   );
 }

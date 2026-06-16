@@ -6,8 +6,17 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { authClient } from "@/lib/auth-client";
 
+type Theme = "light" | "dark" | "system";
+
+const CYCLE: Theme[] = ["light", "dark", "system"];
+
+function nextTheme(current: string): Theme {
+  const idx = CYCLE.indexOf(current as Theme);
+  return CYCLE[(idx === -1 ? 0 : idx + 1) % CYCLE.length];
+}
+
 export function ThemeShortcut() {
-  const { resolvedTheme, setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const { data: session } = authClient.useSession();
   const isLoggedIn = !!session?.user;
 
@@ -26,14 +35,14 @@ export function ThemeShortcut() {
     const handler = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === "l") {
         e.preventDefault();
-        const next = resolvedTheme === "dark" ? "light" : "dark";
+        const next = nextTheme(theme ?? "system");
         setTheme(next);
         if (isLoggedIn) saveTheme({ theme: next }).catch(() => {});
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [resolvedTheme, setTheme, isLoggedIn, saveTheme]);
+  }, [theme, setTheme, isLoggedIn, saveTheme]);
 
   return null;
 }
