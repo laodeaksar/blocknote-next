@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { authClient } from "@/lib/auth-client";
+import { Button } from "./ui/button";
 
 type Theme = "light" | "dark" | "system";
 
@@ -36,7 +37,7 @@ export function ThemeToggle() {
   useEffect(() => setMounted(true), []);
 
   if (!mounted) {
-    return <div className="w-9 h-9 rounded-lg border border-border bg-background" />;
+    return <div className="w-9 h-9 rounded-lg bg-background" />;
   }
 
   const current = (theme as Theme) ?? "system";
@@ -49,13 +50,14 @@ export function ThemeToggle() {
   };
 
   return (
-    <button
+    <Button
       onClick={toggle}
-      className="w-9 h-9 flex items-center justify-center rounded-lg border border-border bg-background text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+      variant="ghost"
+      size="icon"
       aria-label={label}
       title={label}
     >
       <ThemeIcon theme={current} />
-    </button>
+    </Button>
   );
 }
